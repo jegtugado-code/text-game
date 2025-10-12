@@ -1,0 +1,491 @@
+{
+  "start": {
+    "title": "Awakening in the Cell",
+    "text": "Your head throbs as you awaken on a cold stone floor. The air is damp, the walls slick with moss. A dim lantern flickers outside your cell. A whisper echoes down the hall... 'Welcome to the Dungeon of Echoes.'",
+    "choices": [
+      { "label": "Inspect the iron door", "nextScene": "inspect_door" },
+      {
+        "label": "Search the straw bed",
+        "nextScene": "search_bed"
+      },
+      { "label": "Call out for help", "nextScene": "call_out" }
+    ]
+  },
+
+  "inspect_door": {
+    "title": "The Iron Door",
+    "text": "The door is heavy and locked. You notice a small keyhole and rust eating away at the hinges.",
+    "choices": [
+      {
+        "label": "Try to pry it open with bare hands",
+        "nextScene": "hurt_hands"
+      },
+      {
+        "label": "Return to the bed",
+        "nextScene": "search_bed",
+        "conditions": [{ "type": "noChoiceMade", "value": "find_cookie" }]
+      },
+      {
+        "label": "Use the Cell Key",
+        "nextScene": "hallway",
+        "conditions": [{ "type": "hasItem", "value": "cell_key" }]
+      }
+    ]
+  },
+
+  "hurt_hands": {
+    "title": "Bloodied Hands",
+    "text": "You strain against the metal. Your fingers ache as rust flakes off. Blood seeps from a cut.",
+    "choices": [{ "label": "Step back, exhausted", "nextScene": "start" }],
+    "effects": [{ "type": "modifyStat", "stat": "HP", "amount": -5 }]
+  },
+
+  "search_bed": {
+    "title": "Rummage the Straw Bed",
+    "text": "You rummage through the filthy straw and find a bent metal spoon covered in grime.",
+    "choices": [
+      {
+        "label": "Take the spoon",
+        "nextScene": "inspect_door",
+        "conditions": [{ "type": "noItem", "value": "rusty_spoon" }],
+        "effects": [{ "type": "addItem", "item": "rusty_spoon" }]
+      },
+      {
+        "label": "Keep searching",
+        "nextScene": "find_cookie",
+        "conditions": [{ "type": "noChoiceMade", "value": "find_cookie" }]
+      },
+      { "label": "Return to the door", "nextScene": "inspect_door" }
+    ]
+  },
+
+  "find_cookie": {
+    "title": "A Strange Fortune Cookie",
+    "text": "A strange fortune cookie lies hidden beneath the straw — an odd sight in such a grim place.",
+    "choices": [
+      {
+        "label": "Eat it",
+        "nextScene": "eat_cookie",
+        "effects": [{ "type": "removeItem", "item": "fortune_cookie" }]
+      },
+      { "label": "Save it for later", "nextScene": "inspect_door" }
+    ],
+    "effects": [{ "type": "addItem", "item": "fortune_cookie" }]
+  },
+
+  "eat_cookie": {
+    "title": "Fortune Eaten",
+    "text": "You crack the cookie open and eat it. Inside, a slip reads: 'Luck favors the desperate.' You feel oddly encouraged.",
+    "choices": [{ "label": "Return to the door", "nextScene": "inspect_door" }],
+    "effects": [{ "type": "modifyStat", "stat": "Luck", "amount": 5 }]
+  },
+
+  "call_out": {
+    "title": "Calling Out",
+    "text": "Your voice echoes into darkness. Moments later, a guard stomps near your cell. He sneers, 'Quiet!' but tosses something through the bars before walking away.",
+    "choices": [
+      {
+        "label": "Pick up what he tossed",
+        "nextScene": "find_key",
+        "conditions": [{ "type": "noChoiceMade", "value": "find_key" }]
+      },
+      { "label": "Stay silent and wait", "nextScene": "start" }
+    ]
+  },
+
+  "find_key": {
+    "title": "Cold Cell Key",
+    "text": "You reach out and grasp a cold metal object — a small cell key, glinting faintly in the dim light.",
+    "choices": [{ "label": "Unlock the cell door", "nextScene": "hallway" }],
+    "effects": [{ "type": "addItem", "item": "cell_key" }]
+  },
+
+  "hallway": {
+    "title": "Dungeon Hallway",
+    "text": "The corridor beyond is long and lined with barred doors. You hear faint groans and chains rattling in the distance. To your left is a stairway leading upward; to your right, a darker path deeper into the dungeon.",
+    "choices": [
+      { "label": "Go left up the stairs", "nextScene": "guard_post" },
+      { "label": "Go right into the shadows", "nextScene": "dark_passage" },
+      { "label": "Return to your cell", "nextScene": "start" }
+    ]
+  },
+
+  "guard_post": {
+    "title": "Guard Post",
+    "text": "You reach a small post where a half-asleep guard snores loudly. A table nearby holds some bandages and a blue key.",
+    "choices": [
+      { "label": "Steal the bandages", "nextScene": "take_bandages" },
+      {
+        "label": "Steal the blue key",
+        "nextScene": "take_blue_key",
+        "conditions": [{ "type": "noItem", "value": "blue_key" }]
+      },
+      { "label": "Sneak past him", "nextScene": "armory" }
+    ]
+  },
+
+  "take_bandages": {
+    "title": "Pocketed Bandages",
+    "text": "You quietly pocket the bandages. The guard stirs, but you freeze — he doesn’t wake.",
+    "choices": [{ "label": "Return to the hallway", "nextScene": "hallway" }],
+    "effects": [{ "type": "addItem", "item": "bandages" }]
+  },
+
+  "take_blue_key": {
+    "title": "Blue Key Stolen",
+    "text": "You snatch the blue key and slip away, heart pounding.",
+    "choices": [{ "label": "Return to the hallway", "nextScene": "hallway" }],
+    "effects": [{ "type": "addItem", "item": "blue_key" }]
+  },
+
+  "dark_passage": {
+    "title": "Dark Passage",
+    "text": "You move deeper into darkness. Something skitters across your foot. Ahead, a faint whisper says, 'Turn back...' There’s a locked iron door with a black keyhole.",
+    "choices": [
+      {
+        "label": "Try the Black Key",
+        "nextScene": "treasure_room",
+        "conditions": [{ "type": "hasItem", "value": "black_key" }],
+        "effects": [{ "type": "removeItem", "item": "black_key" }]
+      },
+      { "label": "Go back to the hallway", "nextScene": "hallway" },
+      {
+        "label": "Push forward without opening it",
+        "nextScene": "creature_encounter"
+      }
+    ]
+  },
+
+  "creature_encounter": {
+    "title": "Creature in the Shadows",
+    "text": "A malformed creature emerges from the shadows, snarling. You barely dodge as it swipes, claws grazing your arm.",
+    "choices": [
+      { "label": "Run back", "nextScene": "hallway" },
+      { "label": "Stand your ground", "nextScene": "fight_creature" }
+    ],
+    "effects": [{ "type": "modifyStat", "stat": "HP", "amount": -40 }]
+  },
+
+  "fight_creature": {
+    "title": "Fight the Creature",
+    "text": "You swing wildly with your rusty spoon — surprisingly effective! The creature collapses, leaving behind a black key covered in slime.",
+    "choices": [{ "label": "Take the black key", "nextScene": "dark_passage" }],
+    "effects": [{ "type": "addItem", "item": "black_key" }]
+  },
+
+  "treasure_room": {
+    "title": "Chest-Filled Room",
+    "text": "You unlock the iron door with the black key. Inside, chests gleam in torchlight. You find healing bandages and a fortune cookie resting atop a skull.",
+    "choices": [
+      {
+        "label": "Take the items",
+        "nextScene": "altar_room",
+        "effects": [
+          { "type": "addItem", "item": "bandages" },
+          { "type": "addItem", "item": "fortune_cookie" }
+        ]
+      },
+      { "label": "Leave quietly", "nextScene": "hallway" }
+    ]
+  },
+
+  "altar_room": {
+    "title": "The Eerie Altar",
+    "text": "Beyond the treasure room lies an eerie altar. A voice in your head whispers: 'Offer something precious for freedom.'",
+    "choices": [
+      {
+        "label": "Offer the Blue Key",
+        "nextScene": "hidden_exit",
+        "conditions": [{ "type": "hasItem", "value": "blue_key" }],
+        "effects": [{ "type": "removeItem", "item": "blue_key" }]
+      },
+      {
+        "label": "Offer the Rusty Spoon",
+        "nextScene": "altar_room",
+        "conditions": [{ "type": "hasItem", "value": "rusty_spoon" }],
+        "effects": [
+          { "type": "removeItem", "item": "rusty_spoon" },
+          { "type": "modifyStat", "stat": "Luck", "amount": 10 }
+        ]
+      },
+      { "label": "Offer nothing and leave", "nextScene": "hallway" }
+    ]
+  },
+
+  "hidden_exit": {
+    "title": "Hidden Stairway",
+    "text": "The altar glows. The floor trembles, revealing a hidden stairway leading to a moonlit tunnel.",
+    "choices": [],
+    "isEnding": true
+  },
+
+  "armory": {
+    "title": "The Armory",
+    "text": "You find an old armory with broken weapons. One chest glows faintly — sealed with a blue lock.",
+    "choices": [
+      {
+        "label": "Use the Blue Key to open it",
+        "nextScene": "freedom_gate",
+        "conditions": [{ "type": "hasItem", "value": "blue_key" }],
+        "effects": [{ "type": "removeItem", "item": "blue_key" }]
+      },
+      {
+        "label": "Search the armory for useful items",
+        "nextScene": "merchant_room"
+      },
+      { "label": "Return to the guard post", "nextScene": "guard_post" }
+    ]
+  },
+
+  "freedom_gate": {
+    "title": "Secret Escape",
+    "text": "Inside the chest, a hidden lever clicks. A section of the wall slides open, revealing the outside world beyond iron bars. You’ve found the dungeon’s secret escape.",
+    "choices": [],
+    "isEnding": true
+  },
+
+  "merchant_room": {
+    "title": "Merchant's Stall",
+    "text": "You enter a cramped room lit by a single brazier. An old merchant sits behind a stall, eyes like coins. He offers trinkets, supplies, and information—for a price.",
+    "choices": [
+      {
+        "label": "Buy a healing salve (5 coins)",
+        "nextScene": "merchant_after_buy",
+        "conditions": [{ "type": "hasItem", "value": "coins" }],
+        "effects": [
+          { "type": "removeItem", "item": "coins" },
+          { "type": "addItem", "item": "healing_salve" },
+          { "type": "modifyStat", "stat": "GoldSpent", "amount": 5 }
+        ]
+      },
+      {
+        "label": "Trade your fortune cookie for information",
+        "nextScene": "merchant_info",
+        "conditions": [{ "type": "hasItem", "value": "fortune_cookie" }],
+        "effects": [
+          { "type": "removeItem", "item": "fortune_cookie" },
+          { "type": "modifyStat", "stat": "Knowledge", "amount": 1 }
+        ]
+      },
+      { "label": "Haggle for a discount", "nextScene": "haggle_fail" },
+      { "label": "Leave the stall", "nextScene": "hallway" }
+    ]
+  },
+
+  "merchant_after_buy": {
+    "title": "After the Purchase",
+    "text": "The merchant hands you a small jar. 'Not much, but it'll do,' he rasps. You feel a faint warmth in your pocket where coins used to be.",
+    "choices": [
+      { "label": "Thank him and leave", "nextScene": "hallway" },
+      { "label": "Ask about the altar", "nextScene": "merchant_info" }
+    ]
+  },
+
+  "merchant_info": {
+    "title": "Merchant's Whisper",
+    "text": "He leans in and whispers that the altar answers only those who sacrifice; keys will not open what the altar hides. He mentions a cursed mirror hidden past the armory.",
+    "choices": [
+      { "label": "Seek the cursed mirror", "nextScene": "cursed_mirror" },
+      { "label": "Return to the hallway", "nextScene": "hallway" }
+    ]
+  },
+
+  "haggle_fail": {
+    "title": "Haggling Backfire",
+    "text": "The merchant scoffs at your attempt. He points behind you and a burly mercenary steps into the doorway. You back away, embarrassed.",
+    "choices": [{ "label": "Apologize and leave", "nextScene": "hallway" }],
+    "effects": [{ "type": "modifyStat", "stat": "Luck", "amount": -2 }]
+  },
+
+  "cursed_mirror": {
+    "title": "The Cursed Mirror",
+    "text": "A cracked mirror sits on a pedestal. Your reflection lingers a moment too long. The inscription reads: 'What you give, I become.'",
+    "choices": [
+      {
+        "label": "Offer a stat (trade 10 HP for 15 Luck)",
+        "nextScene": "mirror_trade",
+        "effects": [
+          { "type": "modifyStat", "stat": "HP", "amount": -10 },
+          { "type": "modifyStat", "stat": "Luck", "amount": 15 }
+        ]
+      },
+      {
+        "label": "Offer an item (sacrifice Healing Salve)",
+        "nextScene": "mirror_item_sacrifice",
+        "conditions": [{ "type": "hasItem", "value": "healing_salve" }],
+        "effects": [
+          { "type": "removeItem", "item": "healing_salve" },
+          { "type": "addItem", "item": "mirror_shard" },
+          { "type": "modifyStat", "stat": "Knowledge", "amount": 2 }
+        ]
+      },
+      { "label": "Smash the mirror", "nextScene": "mirror_smash" },
+      { "label": "Leave it be", "nextScene": "hallway" }
+    ]
+  },
+
+  "mirror_trade": {
+    "title": "Mirror's Trade",
+    "text": "You feel your vitality ebb as the mirror's surface gleams. Your wounds ache less in spirit, though your body feels lighter.",
+    "choices": [
+      { "label": "Step away", "nextScene": "hallway" },
+      { "label": "Gaze again", "nextScene": "mirror_gaze" }
+    ]
+  },
+
+  "mirror_item_sacrifice": {
+    "title": "Shard from Glass",
+    "text": "The salve dissolves into the glass. A small shard falls into your hand, humming with power.",
+    "choices": [{ "label": "Pocket the shard", "nextScene": "hallway" }]
+  },
+
+  "mirror_smash": {
+    "title": "Shattered Reflection",
+    "text": "The mirror explodes into darkness. A shadow leaps out and grazes you as it vanishes into the walls.",
+    "choices": [{ "label": "Run back to the hallway", "nextScene": "hallway" }],
+    "effects": [
+      { "type": "modifyStat", "stat": "HP", "amount": -20 },
+      { "type": "modifyStat", "stat": "Luck", "amount": -5 }
+    ]
+  },
+
+  "mirror_gaze": {
+    "title": "Glimpse of Futures",
+    "text": "The reflection smiles without you. For a moment you see possible futures — one leads to freedom, another to bindings deeper than chains.",
+    "choices": [
+      { "label": "Remember the futures and leave", "nextScene": "hallway" },
+      { "label": "Follow the freedom path", "nextScene": "final_choice" }
+    ],
+    "effects": [{ "type": "modifyStat", "stat": "Knowledge", "amount": 1 }]
+  },
+
+  "puzzle_chamber": {
+    "title": "Pedestal Puzzle Chamber",
+    "text": "A circular room with three pedestals stands silent. Each pedestal has a shallow indentation shaped like an item. A plaque reads: 'Place what was foretold, and the path will open.'",
+    "choices": [
+      {
+        "label": "Place the Mirror Shard on the pedestal",
+        "nextScene": "puzzle_solved",
+        "conditions": [{ "type": "hasItem", "value": "mirror_shard" }],
+        "effects": [
+          { "type": "removeItem", "item": "mirror_shard" },
+          { "type": "modifyStat", "stat": "Knowledge", "amount": 3 }
+        ]
+      },
+      {
+        "label": "Place the Rusty Spoon (it fits oddly)",
+        "nextScene": "puzzle_partial",
+        "conditions": [{ "type": "hasItem", "value": "rusty_spoon" }],
+        "effects": [
+          { "type": "removeItem", "item": "rusty_spoon" },
+          { "type": "modifyStat", "stat": "Luck", "amount": 2 }
+        ]
+      },
+      { "label": "Leave the chamber", "nextScene": "hallway" }
+    ]
+  },
+
+  "puzzle_partial": {
+    "title": "Puzzle Partially Solved",
+    "text": "The room hums faintly but the mechanism stalls. Something else is needed to finish the circuit.",
+    "choices": [
+      { "label": "Search the room further", "nextScene": "find_gear" },
+      { "label": "Leave disappointed", "nextScene": "hallway" }
+    ]
+  },
+
+  "find_gear": {
+    "title": "Found a Brass Gear",
+    "text": "Behind a loose brick you find a small brass gear and a note: 'Turn the wheel twice to speak the door.'",
+    "choices": [
+      {
+        "label": "Take the gear",
+        "nextScene": "puzzle_chamber",
+        "effects": [{ "type": "addItem", "item": "brass_gear" }]
+      }
+    ]
+  },
+
+  "puzzle_solved": {
+    "title": "Puzzle Solved",
+    "text": "The pedestals click into place. A hidden panel opens revealing a winding tunnel lit by bioluminescent fungus.",
+    "choices": [
+      { "label": "Enter the tunnel", "nextScene": "fungal_tunnel" },
+      { "label": "Return to the hallway", "nextScene": "hallway" }
+    ],
+    "effects": [{ "type": "modifyStat", "stat": "Knowledge", "amount": 5 }]
+  },
+
+  "fungal_tunnel": {
+    "title": "Fungal Tunnel",
+    "text": "The fungus provides a soft light and a sweet scent. You feel oddly invigorated but wary of its spores.",
+    "choices": [
+      { "label": "Collect spores (risky)", "nextScene": "spore_collection" },
+      { "label": "Move quickly through", "nextScene": "outside_gate" }
+    ]
+  },
+
+  "spore_collection": {
+    "title": "Spore Collection",
+    "text": "You carefully gather spores into a jar. A tickle in your throat warns you that inhalation would be dangerous.",
+    "choices": [
+      {
+        "label": "Keep spores",
+        "nextScene": "fungal_tunnel",
+        "effects": [{ "type": "addItem", "item": "spore_jar" }]
+      }
+    ],
+    "effects": [{ "type": "modifyStat", "stat": "HP", "amount": -2 }]
+  },
+
+  "outside_gate": {
+    "title": "The Outside Gate",
+    "text": "A rusted gate blocks the final stretch. It looks fragile enough to pry open with tools or brute force.",
+    "choices": [
+      {
+        "label": "Use brass gear to jam the lock",
+        "nextScene": "freedom_gate",
+        "conditions": [{ "type": "hasItem", "value": "brass_gear" }]
+      },
+      { "label": "Force the gate open", "nextScene": "freedom_gate" }
+    ]
+  },
+
+  "final_choice": {
+    "title": "The Final Choice",
+    "text": "You stand before two paths revealed in the mirror's vision: one leads to a lonely freedom that costs you something of yourself; the other keeps you here with power beyond measure.",
+    "choices": [
+      {
+        "label": "Choose freedom (requires Mirror Shard)",
+        "nextScene": "freedom_gate",
+        "conditions": [{ "type": "hasItem", "value": "mirror_shard" }],
+        "effects": [
+          { "type": "removeItem", "item": "mirror_shard" },
+          { "type": "modifyStat", "stat": "HP", "amount": -5 }
+        ]
+      },
+      {
+        "label": "Choose power (sacrifice sanity)",
+        "nextScene": "power_ending",
+        "effects": [
+          { "type": "modifyStat", "stat": "Knowledge", "amount": 10 },
+          { "type": "modifyStat", "stat": "Luck", "amount": -10 }
+        ]
+      }
+    ]
+  },
+
+  "power_ending": {
+    "title": "Embrace of Power",
+    "text": "You embrace the dark promise. Knowledge floods your mind, but a cold hollowness grows where warmth once lived.",
+    "choices": [],
+    "isEnding": true
+  },
+
+  "death": {
+    "title": "Death by Injury",
+    "text": "Your wounds overwhelm you. Darkness takes you as your strength fades away.",
+    "choices": [],
+    "isEnding": true
+  }
+}

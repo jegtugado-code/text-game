@@ -1,0 +1,57 @@
+## Node modules
+node_modules/
+
+# PNPM
+pnpm-lock.yaml
+pnpm-workspace.yaml
+
+# Build outputs
+dist/
+build/
+out/
+
+# Logs
+*.log
+yarn-debug.log*
+yarn-error.log*
+npm-debug.log*
+
+# Runtime data
+.pids
+*.pid
+*.seed
+*.pid.lock
+
+# dotenv environment variables
+.env
+.env.test
+.env.local
+.env.*.local
+
+# macOS
+.DS_Store
+
+# VSCode
+.vscode/
+
+# TypeScript
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Misc
+coverage/
+.nyc_output/
+.cache/
+/.parcel-cache/
+/.turbo/
+
+# Editor folders
+.idea/
+.sublime-project
+.sublime-workspace
+
+# OS generated files
+Thumbs.db
+ehthumbs.db

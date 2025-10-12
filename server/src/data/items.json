@@ -1,0 +1,44 @@
+[
+  {
+    "id": "black_key",
+    "name": "Black Key",
+    "description": "A small black key, looks like it could open a door.",
+    "type": "functional",
+    "effects": []
+  },
+  {
+    "id": "blue_key",
+    "name": "Blue Key",
+    "description": "A small blue key, looks like it could open a door.",
+    "type": "functional",
+    "effects": []
+  },
+  {
+    "id": "cell_key",
+    "name": "Cell Key",
+    "description": "A small key that looks like it could open a cell door.",
+    "type": "functional",
+    "effects": []
+  },
+  {
+    "id": "rusty_spoon",
+    "name": "Rusty Spoon",
+    "description": "An old, rusty spoon. Not very useful as a weapon, but could be used to dig or pry.",
+    "type": "functional",
+    "effects": []
+  },
+  {
+    "id": "fortune_cookie",
+    "name": "Fortune Cookie",
+    "description": "A cookie that contains a small piece of paper with a fortune written on it.",
+    "type": "consumable",
+    "effects": [{ "type": "modifyStat", "stat": "Luck", "amount": 5 }]
+  },
+  {
+    "id": "bandages",
+    "name": "Bandages",
+    "description": "A set of clean bandages. Can be used to heal wounds.",
+    "type": "consumable",
+    "effects": [{ "type": "modifyStat", "stat": "HP", "amount": 10 }]
+  }
+]

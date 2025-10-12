@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    /* --- Core build options --- */
+    "composite": true, // required for project references
+    "declaration": true, // emit .d.ts files for type sharing
+    "outDir": "dist", // compiled output
+    "rootDir": "src",
+
+    /* --- Language and runtime --- */
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+
+    /* --- Decorator and class field compatibility --- */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "useDefineForClassFields": false,
+
+    /* --- Type safety --- */
+    "strict": true
+  },
+  "include": ["src"]
+}
