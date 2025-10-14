@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GameText } from '../../../components/GameText';
+import { GameText } from '../GameText';
 
 type Props = {
   playerName: string;

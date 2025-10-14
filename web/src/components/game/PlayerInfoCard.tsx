@@ -1,5 +1,5 @@
 import React from 'react';
-import type { PlayerInterface } from '../../../interfaces/player-interface';
+import type { PlayerInterface } from '../../interfaces/player-interface';
 
 type Props = {
   player: PlayerInterface | null;

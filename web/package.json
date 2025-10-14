@@ -10,15 +10,24 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-router/node": "^7.9.4",
     "@text-game/shared": "workspace:*",
     "@xstate/react": "^6.0.0",
+    "axios": "^1.12.2",
+    "clsx": "^2.1.1",
     "colyseus.js": "^0.16.21",
+    "isbot": "^5",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-hook-form": "^7.65.0",
+    "react-router": "^7.9.4",
+    "react-router-dom": "^7.9.4",
     "xstate": "^5.22.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@react-router/dev": "^7.9.4",
+    "@react-router/fs-routes": "^7.9.4",
     "@tailwindcss/vite": "^4.1.14",
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",
