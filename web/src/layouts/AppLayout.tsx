@@ -2,7 +2,7 @@ import { useState, type PropsWithChildren } from 'react';
 
 import { Navbar } from '../components/Navbar';
 import { Sidebar } from '../components/Sidebar';
-import { ToastNotifications } from '../components/ToastNotifications';
+import { ToastNotifications } from '../features/toast';
 
 export const AppLayout = ({ children }: PropsWithChildren) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);

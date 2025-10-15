@@ -1,13 +1,8 @@
 import { useCallback } from 'react';
 
-import type { ToastItemStyle } from '../types/toast-item-style';
-
+import type { ToastHelperOptions } from './types';
 import { useToast } from './use-toast';
 
-export interface ToastHelperOptions {
-  duration?: number;
-  style?: ToastItemStyle;
-}
 // Convenience functions for common toast types
 export function useToastHelpers() {
   const { addToast } = useToast();

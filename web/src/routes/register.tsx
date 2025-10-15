@@ -4,8 +4,8 @@ import {
   RegisterForm,
   type RegisterFormData,
 } from '../components/register/RegisterForm';
+import { useToastHelpers } from '../features/toast';
 import { useAuthRegister } from '../hooks/use-auth-register';
-import { useToastHelpers } from '../hooks/use-toast-helpers';
 
 export default function Register() {
   const { mutate, isError, error } = useAuthRegister();

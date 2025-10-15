@@ -1,4 +1,4 @@
-import { useToast } from '../hooks/use-toast';
+import { useToast } from './use-toast';
 
 export const ToastNotifications = () => {
   const { items } = useToast();

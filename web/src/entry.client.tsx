@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HydratedRouter } from 'react-router/dom';
 
-import { ToastProvider } from './contexts/ToastContextProvider';
+import { ToastProvider } from './features/toast';
 
 const queryClient = new QueryClient();
 
