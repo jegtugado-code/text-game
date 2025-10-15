@@ -1,11 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { authService } from '../services/auth-service';
+import { authService } from '../../services/auth-service';
 
-interface AuthRegisterVariables {
-  email: string;
-  password: string;
-}
+import type { AuthRegisterVariables } from './types';
 
 // Custom hook to handle the registration
 export const useAuthRegister = () => {

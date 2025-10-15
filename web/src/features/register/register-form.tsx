@@ -1,19 +1,6 @@
 import { useForm } from 'react-hook-form';
 
-export interface RegisterFormValues {
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
-export interface RegisterFormData {
-  email: string;
-  password: string;
-}
-
-export interface RegisterFormProps {
-  onSubmit?: (values: RegisterFormData) => void;
-}
+import type { RegisterFormValues, RegisterFormProps } from './types';
 
 export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
   const {
@@ -27,8 +14,11 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
 
   const submit = (data: RegisterFormValues) => {
     const payload = { email: data.email, password: data.password };
-    if (onSubmit) onSubmit(payload);
-    else console.log('register', payload);
+    if (onSubmit) {
+      onSubmit(payload);
+    } else {
+      console.log('register', payload);
+    }
   };
 
   return (
@@ -36,7 +26,9 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
       <div className="hero-content text-center">
         <div className="max-w-md w-full">
           <form
-            onSubmit={handleSubmit(submit)}
+            onSubmit={e => {
+              void handleSubmit(submit)(e);
+            }}
             className="card p-6 shadow-md bg-base-100"
           >
             <h2 className="text-2xl font-bold mb-4">Create account</h2>

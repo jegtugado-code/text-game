@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 
 import {
   RegisterForm,
+  useAuthRegister,
   type RegisterFormData,
-} from '../components/register/RegisterForm';
+} from '../features/register';
 import { useToastHelpers } from '../features/toast';
-import { useAuthRegister } from '../hooks/use-auth-register';
 
 export default function Register() {
   const { mutate, isError, error } = useAuthRegister();
