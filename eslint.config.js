@@ -8,6 +8,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
+import tanstackPluginQuery from '@tanstack/eslint-plugin-query';
 
 export default defineConfig(
   // Global ignores for common files and directories
@@ -148,6 +149,7 @@ export default defineConfig(
       react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      '@tanstack/query': tanstackPluginQuery,
     },
     languageOptions: {
       globals: {
@@ -194,6 +196,9 @@ export default defineConfig(
         'warn',
         { allowConstantExport: true },
       ],
+
+      // Tanstack rules
+      '@tanstack/query/exhaustive-deps': 'error',
     },
   },
 

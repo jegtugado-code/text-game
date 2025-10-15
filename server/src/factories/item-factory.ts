@@ -11,7 +11,7 @@ export function createItemFromJson(json: any): Item {
   item.type = json.type;
   item.effects = new ArraySchema<Effect>();
 
-  for (const e of json.effects || []) {
+  for (const e of json.effects ?? []) {
     item.effects.push(createEffectFromJson(e));
   }
 

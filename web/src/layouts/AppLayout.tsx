@@ -2,6 +2,7 @@ import { useState, type PropsWithChildren } from 'react';
 
 import { Navbar } from '../components/Navbar';
 import { Sidebar } from '../components/Sidebar';
+import { ToastNotifications } from '../components/ToastNotifications';
 
 export const AppLayout = ({ children }: PropsWithChildren) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -22,6 +23,7 @@ export const AppLayout = ({ children }: PropsWithChildren) => {
           <Sidebar />
         </div>
         <main className="flex-1 p-6">{children}</main>
+        <ToastNotifications />
       </div>
     </div>
   );

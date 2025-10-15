@@ -1,10 +1,19 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HydratedRouter } from 'react-router/dom';
 
+import { ToastProvider } from './contexts/ToastContextProvider';
+
+const queryClient = new QueryClient();
+
 ReactDOM.hydrateRoot(
   document,
   <React.StrictMode>
-    <HydratedRouter />
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>
+        <HydratedRouter />
+      </ToastProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );
