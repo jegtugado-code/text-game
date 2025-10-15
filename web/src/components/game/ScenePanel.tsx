@@ -1,14 +1,15 @@
 import type { Scene } from '@text-game/shared';
 import React, { useState } from 'react';
+
 import type { PlayerInterface } from '../../interfaces/player-interface';
 import { GameText } from '../GameText';
 
-type Props = {
+interface Props {
   player: PlayerInterface | null;
   scene: Scene;
   onChoose: (choiceLabel: string) => void;
   onRestart: () => void;
-};
+}
 
 export const ScenePanel: React.FC<Props> = ({
   player,

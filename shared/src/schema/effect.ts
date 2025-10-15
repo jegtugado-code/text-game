@@ -1,4 +1,5 @@
 import { Schema, type } from '@colyseus/schema';
+
 import { EffectType, Stat } from '../types';
 
 export class Effect extends Schema {

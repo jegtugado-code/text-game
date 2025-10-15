@@ -1,4 +1,3 @@
-import { Room, Client } from 'colyseus';
 import {
   AddItemEffect,
   Effect,
@@ -8,11 +7,13 @@ import {
   RemoveItemEffect,
   Scene,
 } from '@text-game/shared';
-import sceneData from '../data/test-scene-data.json';
+import { Room, Client } from 'colyseus';
+
 import itemData from '../data/items.json';
-import { createItemFromJson } from '../factories/item-factory';
-import { createEffectFromJson } from '../factories/effect-factory';
+import sceneData from '../data/test-scene-data.json';
 import { createChoiceFromJson } from '../factories/choice-factory';
+import { createEffectFromJson } from '../factories/effect-factory';
+import { createItemFromJson } from '../factories/item-factory';
 
 interface JoinMessage {
   name: string;
@@ -132,7 +133,6 @@ function applyEffect(player: Player, effect: Effect) {
       player.inventory.splice(index, 1);
     }
   } else if (effect instanceof ModifyStatEffect) {
-    player.stats = player.stats;
     player.stats.set(
       effect.stat,
       (player.stats.get(effect.stat) ?? 0) + effect.amount
@@ -162,15 +162,13 @@ function prepareSceneForPlayer(player: Player, sceneId: string) {
     return c.conditions.every(_ => {
       switch (_.type) {
         case 'hasItem':
-          return player.inventory.some(item => item.id === _!.value);
+          return player.inventory.some(item => item.id === _.value);
         case 'noItem':
-          return (
-            player.inventory.findIndex(item => item.id === _!.value) === -1
-          );
+          return player.inventory.findIndex(item => item.id === _.value) === -1;
         case 'choiceMade':
-          return player.choices.includes(_!.value);
+          return player.choices.includes(_.value);
         case 'noChoiceMade':
-          return !player.choices.includes(_!.value);
+          return !player.choices.includes(_.value);
         default:
           return false;
       }

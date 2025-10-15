@@ -1,9 +1,9 @@
 import type { Stats } from '@text-game/shared';
 import React from 'react';
 
-type Props = {
+interface Props {
   stats?: Stats;
-};
+}
 
 export const StatsCard: React.FC<Props> = ({ stats }) => {
   return (

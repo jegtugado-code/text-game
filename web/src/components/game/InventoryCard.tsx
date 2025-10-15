@@ -1,9 +1,9 @@
 import type { Item } from '@text-game/shared';
 import React from 'react';
 
-type Props = {
+interface Props {
   inventory?: Item[];
-};
+}
 
 export const InventoryCard: React.FC<Props> = ({ inventory }) => {
   return (
@@ -11,7 +11,7 @@ export const InventoryCard: React.FC<Props> = ({ inventory }) => {
       <div className="card-body">
         <h3 className="card-title">Inventory</h3>
         <div className="flex flex-wrap gap-2">
-          {(inventory || []).map((item, i) => (
+          {(inventory ?? []).map((item, i) => (
             <div
               key={item.id + i}
               className={`badge ${getItemColor(item)} badge-lg`}

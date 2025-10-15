@@ -1,5 +1,6 @@
-import { Item, Effect } from '@text-game/shared';
 import { ArraySchema } from '@colyseus/schema';
+import { Item, Effect } from '@text-game/shared';
+
 import { createEffectFromJson } from './effect-factory';
 
 export function createItemFromJson(json: any): Item {

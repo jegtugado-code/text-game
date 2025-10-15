@@ -1,8 +1,10 @@
 import { useMachine } from '@xstate/react';
+import { useEffect } from 'react';
+
 import { gameUiMachine } from '../xstate/game-ui-machine';
+
 import { useGameRoom } from './use-game-room';
 import { usePlayer } from './use-player';
-import { useEffect } from 'react';
 
 export function useGameUI() {
   const [state, send] = useMachine(gameUiMachine);
@@ -33,7 +35,7 @@ export function useGameUI() {
 
   function startGame(name: string) {
     send({ type: 'START', name });
-    joinGame(name);
+    joinGame(name).catch(e => console.log(e));
   }
 
   function restartGame() {

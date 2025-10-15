@@ -1,4 +1,5 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
+
 import { constants } from './constants';
 import './style.css';
 import { AppLayout } from './layouts/AppLayout';

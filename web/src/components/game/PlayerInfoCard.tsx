@@ -1,9 +1,10 @@
 import React from 'react';
+
 import type { PlayerInterface } from '../../interfaces/player-interface';
 
-type Props = {
+interface Props {
   player: PlayerInterface | null;
-};
+}
 
 export const PlayerInfoCard: React.FC<Props> = ({ player }) => {
   return (

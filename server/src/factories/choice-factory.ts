@@ -1,5 +1,6 @@
-import { Choice, Effect } from '@text-game/shared';
 import { ArraySchema } from '@colyseus/schema';
+import { Choice, Effect } from '@text-game/shared';
+
 import { createEffectFromJson } from './effect-factory';
 
 export function createChoiceFromJson(json: any): Choice {
@@ -10,7 +11,7 @@ export function createChoiceFromJson(json: any): Choice {
   };
   choice.effects = new ArraySchema<Effect>();
 
-  for (const e of json.effects || []) {
+  for (const e of json.effects ?? []) {
     choice.effects.push(createEffectFromJson(e));
   }
 

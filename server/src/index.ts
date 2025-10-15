@@ -1,11 +1,13 @@
-import dotenv from 'dotenv';
-import { Server } from 'colyseus';
-import { WebSocketTransport } from '@colyseus/ws-transport';
 import { createServer } from 'http';
+
+import { WebSocketTransport } from '@colyseus/ws-transport';
+import { Server } from 'colyseus';
+import dotenv from 'dotenv';
+
 import { GameRoom } from './rooms';
 
 dotenv.config();
-const port = Number(process.env.PORT || 2567);
+const port = Number(process.env.PORT ?? 2567);
 
 // Create a regular Node HTTP server
 const httpServer = createServer();

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+
 import { GameText } from '../GameText';
 
-type Props = {
+interface Props {
   playerName: string;
   setPlayerName: (v: string) => void;
   onStart: (name: string) => void;
-};
+}
 
 export const StartCard: React.FC<Props> = ({
   playerName,

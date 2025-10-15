@@ -1,11 +1,12 @@
 import { useState } from 'react';
+
+import { InventoryCard } from '../../components/game/InventoryCard';
+import { PlayerInfoCard } from '../../components/game/PlayerInfoCard';
+import { ScenePanel } from '../../components/game/ScenePanel';
+import { StartCard } from '../../components/game/StartCard';
+import { StatsCard } from '../../components/game/StatsCard';
 import { useGameUI } from '../../hooks/use-game-ui';
 // Using plain DaisyUI/Tailwind classes instead of react-daisyui components
-import { StartCard } from '../../components/game/StartCard';
-import { ScenePanel } from '../../components/game/ScenePanel';
-import { PlayerInfoCard } from '../../components/game/PlayerInfoCard';
-import { StatsCard } from '../../components/game/StatsCard';
-import { InventoryCard } from '../../components/game/InventoryCard';
 
 export const Game = () => {
   const { state, scene, player, startGame, makeChoice, restartGame } =

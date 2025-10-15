@@ -1,9 +1,9 @@
 // web/src/hooks/useGameRoom.ts
-import { useEffect, useState } from 'react';
-import * as Colyseus from 'colyseus.js';
 import { GameState, type Scene } from '@text-game/shared'; // your scene type interface
+import * as Colyseus from 'colyseus.js';
+import { useEffect, useState } from 'react';
 
-const client = new Colyseus.Client(import.meta.env.VITE_GAME_WS_URL); // adjust if you’re deploying remotely
+const client = new Colyseus.Client(import.meta.env.VITE_GAME_WS_URL as string); // adjust if you’re deploying remotely
 
 export function useGameRoom() {
   const [room, setRoom] = useState<Colyseus.Room<GameState> | null>(null);
@@ -51,7 +51,7 @@ export function useGameRoom() {
 
   useEffect(() => {
     return () => {
-      room?.leave();
+      room?.leave().catch(e => console.log(e));
     };
   }, [room]);
 

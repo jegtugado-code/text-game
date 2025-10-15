@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-type Props = {
+interface Props {
   text: string;
   className?: string;
   /** ms per character */
@@ -11,7 +11,7 @@ type Props = {
   onComplete?: () => void;
   /** when false, show full text immediately without streaming */
   enableStreaming?: boolean;
-};
+}
 
 export const GameText: React.FC<Props> = ({
   text,

@@ -1,7 +1,8 @@
-import { defineConfig, loadEnv } from 'vite';
 import path from 'path';
-import tailwindcss from '@tailwindcss/vite';
+
 import { reactRouter } from '@react-router/dev/vite';
+import tailwindcss from '@tailwindcss/vite';
+import { defineConfig, loadEnv } from 'vite';
 
 export default defineConfig(({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -13,7 +14,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      port: Number(process.env.VITE_PORT || 5173),
+      port: Number(process.env.VITE_PORT ?? 5173),
     },
   };
 });

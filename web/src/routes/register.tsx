@@ -5,8 +5,8 @@ import {
 import { authService } from '../services/auth-service';
 
 export default function Register() {
-  const handleSubmit = async ({ email, password }: RegisterFormData) => {
-    await authService.register(email, password);
+  const handleSubmit = ({ email, password }: RegisterFormData) => {
+    authService.register(email, password).catch(e => console.error(e));
   };
   return <RegisterForm onSubmit={handleSubmit} />;
 }
