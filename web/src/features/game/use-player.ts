@@ -2,7 +2,7 @@ import { GameState, Player, type Stats } from '@text-game/shared';
 import * as Colyseus from 'colyseus.js';
 import { useEffect, useState } from 'react';
 
-import type { PlayerInterface } from '../interfaces/player-interface';
+import type { PlayerInterface } from './types';
 
 export function usePlayer(room: Colyseus.Room<GameState> | null) {
   const [player, setPlayer] = useState<PlayerInterface | null>(null);

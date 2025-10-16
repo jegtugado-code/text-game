@@ -1,10 +1,9 @@
 import { useMachine } from '@xstate/react';
 import { useEffect } from 'react';
 
-import { gameUiMachine } from '../xstate/game-ui-machine';
+import { useGameRoom, usePlayer } from '../features/game';
 
-import { useGameRoom } from './use-game-room';
-import { usePlayer } from './use-player';
+import { gameUiMachine } from './game-ui-machine';
 
 export function useGameUI() {
   const [state, send] = useMachine(gameUiMachine);

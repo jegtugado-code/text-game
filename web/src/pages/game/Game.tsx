@@ -5,8 +5,7 @@ import { PlayerInfoCard } from '../../components/game/PlayerInfoCard';
 import { ScenePanel } from '../../components/game/ScenePanel';
 import { StartCard } from '../../components/game/StartCard';
 import { StatsCard } from '../../components/game/StatsCard';
-import { useGameUI } from '../../hooks/use-game-ui';
-// Using plain DaisyUI/Tailwind classes instead of react-daisyui components
+import { useGameUI } from '../../xstate/use-game-ui';
 
 export const Game = () => {
   const { state, scene, player, startGame, makeChoice, restartGame } =

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type { PlayerInterface } from '../../interfaces/player-interface';
+import type { PlayerInterface } from '../../features/game';
 
 interface Props {
   player: PlayerInterface | null;

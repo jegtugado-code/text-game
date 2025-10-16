@@ -1,7 +1,7 @@
 import type { Scene } from '@text-game/shared';
 import React, { useState } from 'react';
 
-import type { PlayerInterface } from '../../interfaces/player-interface';
+import type { PlayerInterface } from '../../features/game';
 import { GameText } from '../GameText';
 
 interface Props {
