@@ -9,8 +9,8 @@ import {
 } from '@text-game/shared';
 import { Room, Client } from 'colyseus';
 
-import itemData from '../data/items.json';
-import sceneData from '../data/test-scene-data.json';
+import itemData from '../../data/items.json';
+import sceneData from '../../data/test-scene-data.json';
 import { createChoiceFromJson } from '../factories/choice-factory';
 import { createEffectFromJson } from '../factories/effect-factory';
 import { createItemFromJson } from '../factories/item-factory';
