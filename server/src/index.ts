@@ -1,19 +1,34 @@
-import { createServer } from 'http';
+import fs from 'fs';
+import https from 'https';
+import path from 'path';
 
 import dotenv from 'dotenv';
 
 import { attachColyseus } from './colyseus';
+import { createApp } from './server';
+
+// Define the absolute path to the certificates from the server project's location
+const certPath = path.resolve(import.meta.dirname, '../../localhost.pem');
+const keyPath = path.resolve(import.meta.dirname, '../../localhost-key.pem');
+
+// Read the certificate and key files and convert them to strings
+const options = {
+  key: fs.readFileSync(keyPath),
+  cert: fs.readFileSync(certPath),
+};
 
 dotenv.config();
 const port = Number(process.env.PORT ?? 2567);
 
-// Create a regular Node HTTP server
-const httpServer = createServer();
+// Create an Express app and Node HTTP server
+const app = createApp();
+const httpServer = https.createServer(options, app);
 
-// Attach Colyseus to the HTTP server (returns the Colyseus server instance)
+// Attach Colyseus to the HTTP server
 attachColyseus(httpServer);
 
 // Start listening
+
 httpServer.listen(port, () => {
-  console.log(`🚀 Server is running at ws://localhost:${port}`);
+  console.log(`🚀 Server is running at https://localhost:${port}`);
 });

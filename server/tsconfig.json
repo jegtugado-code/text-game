@@ -10,7 +10,8 @@
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "typeRoots": ["node_modules/@types"]
   },
   "include": ["src"],
   "references": [{ "path": "../shared" }]
