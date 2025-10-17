@@ -1,11 +1,21 @@
+import { useNavigate } from 'react-router';
+
 import { constants } from '../constants';
+import { useAuth } from '../contexts';
 
 export interface NavbarProps {
   onMenuClick?: () => void;
 }
 
 export const Navbar = ({ onMenuClick }: NavbarProps) => {
-  const isAuthenticated = false; // Replace with actual authentication logic
+  const navigate = useNavigate();
+  const { isAuthenticated, clearToken } = useAuth();
+
+  const handleLogoutClick = () => {
+    clearToken();
+    void navigate('/');
+  };
+
   return (
     <div className="navbar bg-base-100 shadow-md">
       {/* Left side */}
@@ -60,16 +70,12 @@ export const Navbar = ({ onMenuClick }: NavbarProps) => {
             </label>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-secondary rounded-box w-52"
             >
               <li>
-                <a>Profile</a>
-              </li>
-              <li>
-                <a>Settings</a>
-              </li>
-              <li>
-                <a>Logout</a>
+                <button className="btn btn-link" onClick={handleLogoutClick}>
+                  Logout
+                </button>
               </li>
             </ul>
           </div>

@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HydratedRouter } from 'react-router/dom';
 
+import { AuthProvider } from './contexts';
 import { ToastProvider } from './features/toast';
 
 const queryClient = new QueryClient();
@@ -11,9 +12,11 @@ ReactDOM.hydrateRoot(
   document,
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <HydratedRouter />
-      </ToastProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <HydratedRouter />
+        </ToastProvider>
+      </AuthProvider>
     </QueryClientProvider>
   </React.StrictMode>
 );

@@ -1,5 +1,3 @@
-import { Game } from '../features/game/game';
-
 export default function Index() {
-  return <Game />;
+  return <>Hello World!</>;
 }
