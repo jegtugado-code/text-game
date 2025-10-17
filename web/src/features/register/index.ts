@@ -9,5 +9,4 @@ export type {
   RegisterFormValues,
   RegisterFormData,
   RegisterFormProps,
-  AuthRegisterVariables,
 } from './types';

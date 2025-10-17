@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useNavigate } from 'react-router';
 
 import {
   RegisterForm,
@@ -8,18 +8,19 @@ import {
 import { useToastHelpers } from '../features/toast';
 
 export default function Register() {
-  const { mutate, isError, error } = useAuthRegister();
-  const { showError } = useToastHelpers();
+  const navigate = useNavigate();
+  const { showSuccess, showError } = useToastHelpers();
+  const { mutate } = useAuthRegister({
+    onSuccess: _ => {
+      showSuccess('Account registered.');
+      void navigate('/login');
+    },
+    onError: e => showError(e.message),
+  });
 
   const handleSubmit = ({ email, password }: RegisterFormData) => {
     mutate({ email, password });
   };
-
-  useEffect(() => {
-    if (!isError || !error) return;
-
-    showError(error.message);
-  }, [isError, error, showError]);
 
   return <RegisterForm onSubmit={handleSubmit} />;
 }

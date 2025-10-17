@@ -14,11 +14,7 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
 
   const submit = (data: RegisterFormValues) => {
     const payload = { email: data.email, password: data.password };
-    if (onSubmit) {
-      onSubmit(payload);
-    } else {
-      console.log('register', payload);
-    }
+    onSubmit(payload);
   };
 
   return (

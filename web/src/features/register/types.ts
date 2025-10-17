@@ -10,10 +10,5 @@ export interface RegisterFormData {
 }
 
 export interface RegisterFormProps {
-  onSubmit?: (values: RegisterFormData) => void;
-}
-
-export interface AuthRegisterVariables {
-  email: string;
-  password: string;
+  onSubmit: (values: RegisterFormData) => void;
 }
