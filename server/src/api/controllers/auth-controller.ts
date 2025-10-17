@@ -63,6 +63,7 @@ export async function loginAction(req: Request, res: Response) {
       // If so, send a 400 Bad Request status with the specific validation issues.
       return res.status(400).json({ errors: err.issues });
     }
+    console.error((err as Error).message);
     // Generic error for anything else
     return res.status(500).json({ message: 'Internal error.' });
   }
