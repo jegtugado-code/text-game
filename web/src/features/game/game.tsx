@@ -7,7 +7,7 @@ import { StartCard } from '../../components/game/StartCard';
 import { StatsCard } from '../../components/game/StatsCard';
 import { useGameUI } from '../../xstate/use-game-ui';
 
-export const Game = () => {
+export function Game() {
   const { state, scene, player, startGame, makeChoice, restartGame } =
     useGameUI();
 
@@ -71,4 +71,4 @@ export const Game = () => {
       </div>
     );
   }
-};
+}

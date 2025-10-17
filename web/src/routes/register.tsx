@@ -7,7 +7,7 @@ import {
 } from '../features/register';
 import { useToastHelpers } from '../features/toast';
 
-export default function Register() {
+export default function RegisterPage() {
   const navigate = useNavigate();
   const { showSuccess, showError } = useToastHelpers();
   const { mutate } = useAuthRegister({

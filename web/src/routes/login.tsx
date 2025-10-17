@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router';
 import { LoginForm, useAuthLogin, type LoginFormData } from '../features/login';
 import { useToastHelpers } from '../features/toast';
 
-export default function Login() {
+export default function LoginPage() {
   const navigate = useNavigate();
   const { showSuccess, showError } = useToastHelpers();
   const { mutate } = useAuthLogin({
     onSuccess: _ => {
       showSuccess('Login successful.');
-      void navigate('/');
+      void navigate('/game');
     },
     onError: e => showError(e.message),
   });
