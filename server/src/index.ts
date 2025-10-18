@@ -1,6 +1,7 @@
 import fs from 'fs';
 import https from 'https';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 import dotenv from 'dotenv';
 
@@ -8,8 +9,9 @@ import { attachColyseus } from './colyseus';
 import { createApp } from './server';
 
 // Define the absolute path to the certificates from the server project's location
-const certPath = path.resolve(import.meta.dirname, '../../localhost.pem');
-const keyPath = path.resolve(import.meta.dirname, '../../localhost-key.pem');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const certPath = path.resolve(__dirname, '../../localhost.pem');
+const keyPath = path.resolve(__dirname, '../../localhost-key.pem');
 
 // Read the certificate and key files and convert them to strings
 const options = {

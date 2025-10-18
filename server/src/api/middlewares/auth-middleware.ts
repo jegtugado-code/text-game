@@ -1,36 +1,38 @@
-import type { Response, NextFunction } from 'express';
+import { makeInvoker } from 'awilix-express';
+import type { Request, Response, NextFunction } from 'express';
 
-import { verifyToken } from '../../services/token-service';
-import { RequestWithUser } from '../types';
+import { ITokenService } from '../../services/token-service';
 
 /**
  * Express middleware that checks for a valid JWT in the Authorization header.
+ * Uses awilix-express makeInvoker for dependency injection.
+ * @param tokenService The TokenService dependency (injected by awilix).
  */
-export function authenticate(
-  req: RequestWithUser,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const authHeader = req.headers.authorization;
+const authMiddleware =
+  ({ tokenService }: { tokenService: ITokenService }) =>
+  (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const authHeader = req.headers.authorization;
 
-    if (!authHeader?.startsWith('Bearer ')) {
-      return res
-        .status(401)
-        .json({ error: 'Missing or invalid Authorization header' });
+      if (!authHeader?.startsWith('Bearer ')) {
+        return res
+          .status(401)
+          .json({ error: 'Missing or invalid Authorization header' });
+      }
+
+      const token = authHeader.split(' ')[1];
+      const decoded = tokenService.verifyToken(token);
+
+      // Attach decoded claims to the request for downstream access
+      req.user = decoded;
+
+      next();
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Authentication error:', err.message);
+        return res.status(401).json({ error: err.message || 'Unauthorized' });
+      }
     }
+  };
 
-    const token = authHeader.split(' ')[1];
-    const decoded = verifyToken(token);
-
-    // Attach decoded claims to the request for downstream access
-    req.user = decoded;
-
-    next();
-  } catch (err) {
-    if (err instanceof Error) {
-      console.error('Authentication error:', err.message);
-      return res.status(401).json({ error: err.message || 'Unauthorized' });
-    }
-  }
-}
+export default makeInvoker(authMiddleware);

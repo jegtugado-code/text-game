@@ -1,7 +1,11 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+import { loadControllers, scopePerRequest } from 'awilix-express';
 import cors, { CorsOptions } from 'cors';
 import express from 'express';
 
-import { registerRouter } from './api/routes';
+import container from './container';
 
 const allowedOrigins = ['https://localhost:5009'];
 
@@ -33,13 +37,20 @@ export function createApp() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  // Add a scoped container to each request
+  app.use(scopePerRequest(container));
+
+  // Define the path to your controllers.
+  // `__dirname` is `server/src`, so we need to add the rest of the path.
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const controllersPath = path.join(__dirname, 'api', 'controllers', '*.ts');
+  // Load controllers from the specified directory.
+  app.use(loadControllers(controllersPath));
+
   // Health
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok' });
   });
-
-  // API routes
-  app.use('/api/auth', registerRouter);
 
   return app;
 }

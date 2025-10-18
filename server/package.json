@@ -16,6 +16,8 @@
     "@colyseus/schema": "^3.0.62",
     "@colyseus/ws-transport": "^0.16.5",
     "@text-game/shared": "workspace:*",
+    "awilix": "^12.0.5",
+    "awilix-express": "^9.0.2",
     "colyseus": "^0.16.5",
     "cors": "^2.8.5",
     "express": "^5.1.0",
