@@ -1,41 +1,54 @@
 import { randomBytes, scrypt as _scrypt, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
 
-import { User } from '../models/user';
+import { PrismaClient, User } from '@prisma/client';
 
 const scrypt = promisify(_scrypt);
 
 const users = new Map<string, User>();
 
 export interface IAuthService {
-  createUser: (email: string, password: string) => Promise<boolean>;
-  getUser: (email: string) => Promise<User | null>;
+  createUser: (email: string, password: string) => Promise<User | null>;
+  findUserByEmail: (email: string) => Promise<User | null>;
   login: (email: string, password: string) => Promise<User | null>;
 }
 
 export default class AuthService implements IAuthService {
-  public async createUser(email: string, password: string): Promise<boolean> {
+  private readonly prisma: PrismaClient;
+
+  constructor({ prisma }: { prisma: PrismaClient }) {
+    this.prisma = prisma;
+  }
+
+  public async createUser(
+    email: string,
+    password: string
+  ): Promise<User | null> {
     const normalized = email.toLowerCase();
-    if (users.has(normalized)) return false;
+    if (users.has(normalized)) return null;
 
     const salt = randomBytes(16).toString('hex');
     const derived = (await scrypt(password, salt, 64)) as Buffer;
     const hash = `${salt}:${derived.toString('hex')}`;
 
-    const user: User = {
-      id: String(Date.now()),
-      email: normalized,
-      passwordHash: hash,
-    };
+    const user: User = await this.prisma.user.create({
+      data: {
+        email: normalized,
+        passwordHash: hash,
+      },
+    });
 
-    users.set(normalized, user);
-    return true;
+    return user;
   }
 
-  public getUser(email: string): Promise<User | null> {
-    const user = users.get(email.toLowerCase()) ?? null;
+  public async findUserByEmail(email: string): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: email.toLowerCase(),
+      },
+    });
 
-    return Promise.resolve(user);
+    return user;
   }
 
   /**
@@ -46,7 +59,7 @@ export default class AuthService implements IAuthService {
    */
   public async login(email: string, password: string): Promise<User | null> {
     // 1. Find the user by their email
-    const user = await this.getUser(email);
+    const user = await this.findUserByEmail(email);
     if (!user) {
       return null; // User not found
     }

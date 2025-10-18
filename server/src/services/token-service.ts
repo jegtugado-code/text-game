@@ -1,7 +1,6 @@
+import { User } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import { v7 } from 'uuid';
-
-import { User } from '../models/user';
 
 export interface ITokenService {
   generateToken: (user: User) => string;

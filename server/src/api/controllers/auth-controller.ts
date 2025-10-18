@@ -53,6 +53,7 @@ export default class AuthController {
         // If so, send a 400 Bad Request status with the specific validation issues.
         return res.status(400).json({ errors: err.issues });
       }
+      console.log(err);
       // Generic error for anything else
       return res.status(500).json({ message: 'Internal error.' });
     }
