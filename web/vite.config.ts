@@ -6,8 +6,8 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig, loadEnv } from 'vite';
 
 // Define the absolute path to the certificates from the server project's location
-const certPath = path.resolve(__dirname, '../localhost.pem');
-const keyPath = path.resolve(__dirname, '../localhost-key.pem');
+const certPath = path.resolve(__dirname, '../.ssh/localhost.pem');
+const keyPath = path.resolve(__dirname, '../.ssh/localhost-key.pem');
 
 // Read the certificate and key files and convert them to strings
 const options = {

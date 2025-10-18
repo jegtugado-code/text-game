@@ -15,4 +15,6 @@ mkcert -install
 mkcert localhost 127.0.0.1
 ```
 
+You should have the files `localhost-key.pem` and `localhost.pem`. Move these under `.ssh` folder in your root directory and git will ignore them.
+
 ### 4. Configure apps to use the self-signed certificate

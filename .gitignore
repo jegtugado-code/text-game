@@ -58,3 +58,6 @@ ehthumbs.db
 
 # SSH
 .ssh/
+
+# Postgresql
+.postgres
