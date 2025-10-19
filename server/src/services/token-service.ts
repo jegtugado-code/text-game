@@ -24,7 +24,7 @@ export default class TokenService implements ITokenService {
       // You could add other non-sensitive data like roles here, e.g., 'role': 'user'
     };
     const jwtid = v7();
-    const expiresIn = (process.env.JWT_EXPIRES_IN ?? 3600) as number;
+    const expiresIn = Number(process.env.JWT_EXPIRES_IN) ?? 3600;
     const options: jwt.SignOptions = {
       expiresIn: expiresIn,
       subject: user.id,
