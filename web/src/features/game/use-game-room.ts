@@ -37,9 +37,16 @@ export function useGameRoom() {
     }
   }
 
-  function makeChoice(choiceLabel: string) {
+  function makeChoice(choiceId: string) {
     if (!room) return;
-    room.send('choice', { choice: choiceLabel });
+    // send the stable choice id (server will fallback to label matching
+    // if an older scene JSON/client doesn't include ids yet)
+    room.send('choice', { choice: choiceId });
+  }
+
+  function sendInput(value: string) {
+    if (!room) return;
+    room.send('input', { value });
   }
 
   function resetGame() {
@@ -55,5 +62,14 @@ export function useGameRoom() {
     };
   }, [room]);
 
-  return { joinGame, makeChoice, resetGame, room, scene, error, isConnected };
+  return {
+    joinGame,
+    makeChoice,
+    sendInput,
+    resetGame,
+    room,
+    scene,
+    error,
+    isConnected,
+  };
 }

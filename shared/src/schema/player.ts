@@ -11,7 +11,7 @@ export class Player extends Schema {
 
   constructor() {
     super();
-    this.stats.set('HP', 100);
-    this.stats.set('Luck', 20);
+    this.stats.set('health', 100);
+    this.stats.set('luck', 20);
   }
 }

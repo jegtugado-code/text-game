@@ -7,7 +7,8 @@ import { GameText } from '../GameText';
 interface Props {
   player: PlayerInterface | null;
   scene: Scene;
-  onChoose: (choiceLabel: string) => void;
+  onChoose: (choiceId: string) => void;
+  onSubmitInput: (value: string) => void;
   onRestart: () => void;
 }
 
@@ -15,10 +16,12 @@ export const ScenePanel: React.FC<Props> = ({
   player,
   scene,
   onChoose,
+  onSubmitInput,
   onRestart,
 }) => {
   const [isTitleStreaming, setIsTitleStreaming] = useState(true);
   const [isTextStreaming, setIsTextStreaming] = useState(false);
+  const [inputValue, setInputValue] = useState('');
   const isStreaming = isTitleStreaming || isTextStreaming;
 
   return (
@@ -53,12 +56,44 @@ export const ScenePanel: React.FC<Props> = ({
         )}
 
         <div className="card-actions mt-4 flex flex-wrap gap-2">
+          {scene.inputPrompt && (
+            <div className="w-full flex gap-2 items-center">
+              <input
+                aria-label="scene-input"
+                placeholder={String(scene.inputPrompt ?? '')}
+                value={inputValue}
+                onChange={e => setInputValue(e.target.value)}
+                className="input input-bordered flex-1"
+                disabled={isStreaming}
+              />
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  const v = inputValue.trim();
+                  if (!v) return;
+                  onSubmitInput(v);
+                  setInputValue('');
+                }}
+                disabled={isStreaming || inputValue.trim().length === 0}
+              >
+                Submit
+              </button>
+            </div>
+          )}
           {scene.choices.map(choice => (
             <button
-              key={choice.label + choice.nextScene}
-              onClick={() => onChoose(choice.label)}
+              key={String(choice.id)}
+              onClick={() => {
+                if (!choice.id) {
+                  // Do not allow selecting choices without stable ids.
+                  // Keep a visible warning in the console to help debug missing ids.
+                  console.warn('Choice missing id, cannot select:', choice);
+                  return;
+                }
+                onChoose(String(choice.id));
+              }}
               className="btn btn-secondary"
-              disabled={isStreaming}
+              disabled={isStreaming || !choice.id}
             >
               {choice.label}
             </button>

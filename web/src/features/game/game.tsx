@@ -8,8 +8,15 @@ import { StatsCard } from '../../components/game/StatsCard';
 import { useGameUI } from '../../xstate/use-game-ui';
 
 export function Game() {
-  const { state, scene, player, startGame, makeChoice, restartGame } =
-    useGameUI();
+  const {
+    state,
+    scene,
+    player,
+    startGame,
+    makeChoice,
+    restartGame,
+    sendInput,
+  } = useGameUI();
 
   const [playerName, setPlayerName] = useState<string>('');
 
@@ -59,6 +66,7 @@ export function Game() {
             player={player}
             scene={scene}
             onChoose={makeChoice}
+            onSubmitInput={sendInput}
             onRestart={restartGame}
           />
         </div>

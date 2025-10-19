@@ -1,0 +1,144 @@
+{
+  "start": {
+    "title": "Adventurer’s Guild Registration",
+    "text": "You step up to the registration counter. A friendly clerk smiles and asks to record your details. This will just take a moment.",
+    "choices": [
+      {
+        "id": "begin_registration",
+        "label": "Begin registration.",
+        "nextScene": "enter_name"
+      },
+      {
+        "id": "ask_for_more_time",
+        "label": "I need a moment.",
+        "nextScene": "pause_scene"
+      }
+    ]
+  },
+
+  "pause_scene": {
+    "title": "Take a Breath",
+    "text": "You take a moment to gather yourself. When you're ready, the clerk will be waiting.",
+    "choices": [
+      {
+        "id": "ready_now",
+        "label": "I'm ready now.",
+        "nextScene": "enter_name"
+      }
+    ]
+  },
+
+  "enter_name": {
+    "title": "What is your name?",
+    "text": "Please enter the name you'd like to be known by.",
+    "inputPrompt": "Enter your name",
+    "inputNextScene": "ask_gender",
+    "choices": []
+  },
+
+  "ask_gender": {
+    "title": "A Few Details",
+    "text": "The clerk notes your name and asks if you'd like to share your gender. This helps personalize records but is optional.",
+    "choices": [
+      {
+        "id": "gender_male",
+        "label": "Male",
+        "nextScene": "guild_explanation"
+      },
+      {
+        "id": "gender_female",
+        "label": "Female",
+        "nextScene": "guild_explanation"
+      },
+      {
+        "id": "gender_na",
+        "label": "Prefer not to say",
+        "nextScene": "guild_explanation"
+      }
+    ]
+  },
+
+  "welcome_scene": {
+    "title": "Welcome Aboard",
+    "text": "The clerk smiles and finishes the paperwork. 'Welcome to the guild. Your journey begins now. Remember: be kind, be curious, and learn as you go.'",
+    "choices": [{ "id": "finish", "label": "Thank you.", "nextScene": "end" }]
+  },
+
+  "guild_explanation": {
+    "title": "How the Guild Works",
+    "text": "The clerk explains: 'The Adventurer's Guild matches people to tasks that suit their experience. As you gain experience you'll face tougher challenges.'",
+    "choices": [
+      {
+        "id": "ask_about_rank",
+        "label": "Tell me about ranks.",
+        "nextScene": "explain_rank"
+      },
+      {
+        "id": "ok_continue",
+        "label": "That's fine, continue.",
+        "nextScene": "explain_rank"
+      }
+    ]
+  },
+
+  "explain_rank": {
+    "title": "Ranks and Growth",
+    "text": "'New members begin as F-Rank. With time, practice, and successful tasks you may rise in rank. Higher rank brings greater responsibility and reward.'",
+    "choices": [
+      {
+        "id": "sounds_good",
+        "label": "Sounds good.",
+        "nextScene": "receive_guild_badge"
+      },
+      {
+        "id": "i_might_be_nervous",
+        "label": "I'm a bit nervous.",
+        "nextScene": "hesitation_scene"
+      }
+    ]
+  },
+
+  "hesitation_scene": {
+    "title": "A Moment of Doubt",
+    "text": "The clerk offers reassurance: 'It's normal to be nervous. Start small, learn, and you'll grow more confident.'",
+    "choices": [
+      {
+        "id": "continue_anyway",
+        "label": "I'll continue.",
+        "nextScene": "receive_guild_badge"
+      },
+      {
+        "id": "ask_training_options",
+        "label": "How can I train safely?",
+        "nextScene": "training_grounds_info"
+      }
+    ]
+  },
+
+  "training_grounds_info": {
+    "title": "Training Options",
+    "text": "'We offer practice areas and instructors where new members can learn basic skills. Take your time to prepare.'",
+    "choices": [
+      {
+        "id": "thanks_and_continue",
+        "label": "Thanks, continue.",
+        "nextScene": "receive_guild_badge"
+      }
+    ]
+  },
+
+  "receive_guild_badge": {
+    "title": "Your Registration",
+    "text": "The clerk completes the registration. 'You're officially registered. Keep your information safe and return if you need help.'",
+    "choices": [
+      { "id": "ok_thanks", "label": "Thank you.", "nextScene": "welcome_scene" }
+    ]
+  },
+
+  "end": {
+    "title": "Registration Complete",
+    "text": "You're now registered. When you're ready, speak to the clerk to continue your adventure.",
+    "choices": [],
+    "isEnding": true
+  }
+}

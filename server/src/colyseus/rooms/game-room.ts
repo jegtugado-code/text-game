@@ -9,8 +9,9 @@ import {
 } from '@text-game/shared';
 import { Room, Client } from 'colyseus';
 
+import sceneData from '../../data/intro-scene-data.json';
 import itemData from '../../data/items.json';
-import sceneData from '../../data/test-scene-data.json';
+// import sceneData from '../../data/test-scene-data.json';
 import { createChoiceFromJson } from '../factories/choice-factory';
 import { createEffectFromJson } from '../factories/effect-factory';
 import { createItemFromJson } from '../factories/item-factory';
@@ -23,30 +24,52 @@ interface ChoiceMessage {
   choice: string; // label of the choice in the current scene
 }
 
+interface InputMessage {
+  value: string;
+}
+
+// Lightweight JSON typing for scenes to reduce `any` usage
+interface SceneJSON {
+  title?: string;
+  text?: string;
+  choices?: unknown[];
+  effects?: unknown[];
+  isEnding?: boolean;
+  conditions?: unknown[];
+}
+
 const scenes: Record<string, Scene> = Object.fromEntries(
-  Object.entries(sceneData as Record<string, any>).map(([id, scene]) => [
+  Object.entries(sceneData as Record<string, SceneJSON>).map(([id, scene]) => [
     id,
     {
       ...scene,
       choices: (scene.choices ?? []).map(createChoiceFromJson),
       effects: (scene.effects ?? []).map(createEffectFromJson),
-    },
+    } as Scene,
   ])
 );
+
 enum FixedSceneKeys {
   Start = 'start',
   Death = 'death',
 }
 
 export class GameRoom extends Room<GameState> {
-  onCreate(options: any) {
+  onCreate(options: unknown) {
     // Initialize state
     this.state = new GameState();
     console.log('GameRoom created with options:', options);
 
     // Handle player joining
     this.onMessage<JoinMessage>('join', (client: Client, message) => {
-      this.state.createPlayer(client.sessionId, message.name);
+      // Basic validation for join message
+      const name = typeof message?.name === 'string' ? message.name.trim() : '';
+      if (!name || name.length === 0) {
+        client.send('error', { message: 'Invalid name' });
+        return;
+      }
+
+      this.state.createPlayer(client.sessionId, name);
 
       const player = this.state.players.get(client.sessionId);
       if (!player) return;
@@ -62,8 +85,18 @@ export class GameRoom extends Room<GameState> {
       const player = this.state.players.get(client.sessionId);
       if (!player) return;
       const currentScene = { ...scenes[player.currentScene] };
-      // Find the choice in the current scene
-      const chosen = currentScene.choices.find(_ => _.label === message.choice);
+      // Basic validation
+      const incoming =
+        typeof message?.choice === 'string' ? message.choice.trim() : '';
+      if (!incoming) {
+        client.send('error', { message: 'Invalid choice' });
+        return;
+      }
+
+      // Find the choice by stable id first, fallback to label for
+      // backwards-compatibility with older clients that send labels.
+      let chosen = currentScene.choices.find(c => c.id === incoming);
+      chosen ??= currentScene.choices.find(_ => _.label === incoming);
       if (chosen) {
         // Apply any effects based on the chosen choice
         if (chosen.effects) {
@@ -71,7 +104,7 @@ export class GameRoom extends Room<GameState> {
         }
 
         // Evaluate player health (after applying choice effects)
-        const playerHealth = player.stats.get('HP');
+        const playerHealth = player.stats.get('health');
         if (playerHealth && playerHealth <= 0) {
           // send death scene
           client.send(
@@ -90,6 +123,34 @@ export class GameRoom extends Room<GameState> {
       }
     });
 
+    // Handle text input from player for scenes that request input
+    this.onMessage<InputMessage>('input', (client: Client, message) => {
+      const player = this.state.players.get(client.sessionId);
+      if (!player) return;
+
+      const currentScene = scenes[player.currentScene];
+      if (!currentScene?.inputNextScene) {
+        client.send('error', { message: 'No input expected at this time.' });
+        return;
+      }
+
+      const value =
+        typeof message?.value === 'string' ? message.value.trim() : '';
+      if (!value) {
+        client.send('error', { message: 'Invalid input' });
+        return;
+      }
+
+      // Example handling: if the current scene is the name input scene, set player name
+      // You can expand handling logic based on scene id or effects in the scene.
+      player.name = value;
+
+      // Advance to the configured next scene
+      const next = String(currentScene.inputNextScene);
+      player.currentScene = next;
+      client.send('scene', prepareSceneForPlayer(player, next));
+    });
+
     this.onMessage('reset', (client: Client) => {
       const player = this.state.players.get(client.sessionId);
       if (!player) return;
@@ -105,7 +166,7 @@ export class GameRoom extends Room<GameState> {
     });
   }
 
-  onJoin(client: Client, _options: any) {
+  onJoin(client: Client, _options: unknown) {
     console.log(client.sessionId, 'joined!');
   }
 
