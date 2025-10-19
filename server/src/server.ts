@@ -1,11 +1,10 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+import { AwilixContainer } from 'awilix';
 import { loadControllers, scopePerRequest } from 'awilix-express';
 import cors, { CorsOptions } from 'cors';
 import express from 'express';
-
-import container from './container';
 
 const allowedOrigins = ['https://localhost:5009'];
 
@@ -30,7 +29,7 @@ const corsOptions: CorsOptions = {
   credentials: true,
 };
 
-export function createApp() {
+export function createApp(container: AwilixContainer) {
   const app = express();
 
   app.use(cors(corsOptions));

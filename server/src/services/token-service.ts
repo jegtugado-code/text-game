@@ -1,11 +1,13 @@
 import { User } from '@prisma/client';
-import jwt from 'jsonwebtoken';
+import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { v7 } from 'uuid';
 
 export interface ITokenService {
   generateToken: (user: User) => string;
-  verifyToken: (accessToken: string) => jwt.JwtPayload;
+  verifyToken: (accessToken: string) => JwtPayload;
 }
+
+export type { JwtPayload };
 
 export default class TokenService implements ITokenService {
   private readonly jwtSecret: string;

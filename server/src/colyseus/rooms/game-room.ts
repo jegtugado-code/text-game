@@ -7,18 +7,15 @@ import {
   RemoveItemEffect,
   Scene,
 } from '@text-game/shared';
-import { Room, Client } from 'colyseus';
+import { Room, Client, ServerError } from 'colyseus';
 
 import sceneData from '../../data/intro-scene-data.json';
 import itemData from '../../data/items.json';
 // import sceneData from '../../data/test-scene-data.json';
+import type { ITokenService, JwtPayload } from '../../services/token-service';
 import { createChoiceFromJson } from '../factories/choice-factory';
 import { createEffectFromJson } from '../factories/effect-factory';
 import { createItemFromJson } from '../factories/item-factory';
-
-interface JoinMessage {
-  name: string;
-}
 
 interface ChoiceMessage {
   choice: string; // label of the choice in the current scene
@@ -52,33 +49,55 @@ const scenes: Record<string, Scene> = Object.fromEntries(
 enum FixedSceneKeys {
   Start = 'start',
   Death = 'death',
+  EnterName = 'enter_name',
 }
 
-export class GameRoom extends Room<GameState> {
-  onCreate(options: unknown) {
+// Passed from the client when joining the room
+export interface GameRoomOptions {
+  token?: string;
+}
+
+export interface GameRoomMetadata {
+  userId: string;
+  email: string;
+}
+
+export class GameRoom extends Room<GameState, GameRoomMetadata> {
+  public tokenService!: ITokenService;
+
+  async onAuth(client: Client, options: GameRoomOptions) {
+    if (!options.token) {
+      throw new ServerError(400, 'Authentication token missing.');
+    }
+
+    try {
+      // Verify the token using the secret key
+      const user = this.tokenService.verifyToken(options.token);
+
+      console.log(
+        `Client ${client.sessionId} authenticated with user: ${user.email}`
+      );
+
+      // Store user info in room metadata
+      await this.setMetadata({
+        userId: user.sub,
+        email: user.email as string,
+      });
+
+      // Return the decoded data, which will be passed to onJoin()
+      return user;
+    } catch (err) {
+      console.error('JWT verification failed:', err);
+      throw new ServerError(401, 'Invalid or expired token.');
+    }
+  }
+
+  onCreate(options: GameRoomOptions) {
+    this.maxClients = 1; // Only one client allowed
+    this.autoDispose = true; // Destroy when the player leaves
     // Initialize state
     this.state = new GameState();
     console.log('GameRoom created with options:', options);
-
-    // Handle player joining
-    this.onMessage<JoinMessage>('join', (client: Client, message) => {
-      // Basic validation for join message
-      const name = typeof message?.name === 'string' ? message.name.trim() : '';
-      if (!name || name.length === 0) {
-        client.send('error', { message: 'Invalid name' });
-        return;
-      }
-
-      this.state.createPlayer(client.sessionId, name);
-
-      const player = this.state.players.get(client.sessionId);
-      if (!player) return;
-
-      player.currentScene = FixedSceneKeys.Start;
-
-      // Send the first scene (prepared per-player copy)
-      client.send('scene', prepareSceneForPlayer(player, FixedSceneKeys.Start));
-    });
 
     // Handle player making a choice
     this.onMessage<ChoiceMessage>('choice', (client: Client, message) => {
@@ -143,7 +162,9 @@ export class GameRoom extends Room<GameState> {
 
       // Example handling: if the current scene is the name input scene, set player name
       // You can expand handling logic based on scene id or effects in the scene.
-      player.name = value;
+      if (player.currentScene === String(FixedSceneKeys.EnterName)) {
+        player.name = value;
+      }
 
       // Advance to the configured next scene
       const next = String(currentScene.inputNextScene);
@@ -166,8 +187,18 @@ export class GameRoom extends Room<GameState> {
     });
   }
 
-  onJoin(client: Client, _options: unknown) {
-    console.log(client.sessionId, 'joined!');
+  onJoin(client: Client, options: GameRoomOptions, user: JwtPayload) {
+    console.log(client.sessionId, '-', user.email, 'joined!');
+
+    this.state.createPlayer(client.sessionId, user.email as string);
+
+    const player = this.state.players.get(client.sessionId);
+    if (!player) return;
+
+    player.currentScene = FixedSceneKeys.Start;
+
+    // Send the first scene (prepared per-player copy)
+    client.send('scene', prepareSceneForPlayer(player, FixedSceneKeys.Start));
   }
 
   onLeave(client: Client, _consented: boolean) {

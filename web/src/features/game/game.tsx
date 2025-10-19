@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 
 import { InventoryCard } from '../../components/game/InventoryCard';
 import { PlayerInfoCard } from '../../components/game/PlayerInfoCard';
 import { ScenePanel } from '../../components/game/ScenePanel';
-import { StartCard } from '../../components/game/StartCard';
 import { StatsCard } from '../../components/game/StatsCard';
 import { useGameUI } from '../../xstate/use-game-ui';
 
@@ -18,19 +17,12 @@ export function Game() {
     sendInput,
   } = useGameUI();
 
-  const [playerName, setPlayerName] = useState<string>('');
+  const isIdle = state.matches('idle');
 
-  if (state.matches('idle')) {
-    return (
-      <div className="max-w-xl mx-auto">
-        <StartCard
-          playerName={playerName}
-          setPlayerName={setPlayerName}
-          onStart={startGame}
-        />
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!isIdle) return;
+    startGame();
+  }, [startGame, isIdle]);
 
   if (state.matches('joining')) {
     return (

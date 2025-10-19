@@ -1,39 +1,48 @@
-// web/src/hooks/useGameRoom.ts
 import { GameState, type Scene } from '@text-game/shared'; // your scene type interface
 import * as Colyseus from 'colyseus.js';
 import { useEffect, useState } from 'react';
 
+import { useAuth } from '../../contexts/use-auth';
+
 const client = new Colyseus.Client(import.meta.env.VITE_GAME_WS_URL as string); // adjust if you’re deploying remotely
 
 export function useGameRoom() {
+  const { token } = useAuth();
   const [room, setRoom] = useState<Colyseus.Room<GameState> | null>(null);
   const [scene, setScene] = useState<Scene | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isJoining, setIsJoining] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
 
-  async function joinGame(name: string) {
-    try {
-      const newRoom = await client.joinOrCreate<GameState>('game_room');
+  async function joinGame() {
+    // avoid duplicate join attempts
+    if (isConnected || isJoining || room || !token) return;
 
-      setRoom(newRoom);
+    setIsJoining(true);
+    try {
+      // pass JWT token in the join options so the server can verify/identify the user
+      const gameRoom = await client.joinOrCreate<GameState>('game_room', {
+        token,
+      });
+
+      setRoom(gameRoom);
       setIsConnected(true);
 
-      // Tell server we joined
-      newRoom.send('join', { name });
-
       // Listen for scene updates
-      newRoom.onMessage('scene', (sceneData: Scene) => {
+      gameRoom.onMessage('scene', (sceneData: Scene) => {
         setScene(sceneData);
         setError(null);
       });
 
       // Listen for errors
-      newRoom.onMessage('error', (err: { message: string }) => {
+      gameRoom.onMessage('error', (err: { message: string }) => {
         setError(err.message);
       });
     } catch (e) {
       console.error('Failed to join room:', e);
       setError('Could not connect to game server.');
+    } finally {
+      setIsJoining(false);
     }
   }
 

@@ -3,11 +3,10 @@ import { setup } from 'xstate';
 export const gameUiMachine = setup({
   types: {
     context: {} as {
-      playerName?: string;
       error?: string;
     },
     events: {} as
-      | { type: 'START'; name: string }
+      | { type: 'START' }
       | { type: 'JOIN_SUCCESS' }
       | { type: 'JOIN_FAIL'; error: string }
       | { type: 'SCENE_UPDATE' }
@@ -23,9 +22,6 @@ export const gameUiMachine = setup({
       on: {
         START: {
           target: 'joining',
-          actions: ({ event, context }) => {
-            context.playerName = event.name;
-          },
         },
       },
     },

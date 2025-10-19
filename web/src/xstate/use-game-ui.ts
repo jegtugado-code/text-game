@@ -1,5 +1,5 @@
 import { useMachine } from '@xstate/react';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 
 import { useGameRoom, usePlayer } from '../features/game';
 
@@ -8,7 +8,6 @@ import { gameUiMachine } from './game-ui-machine';
 export function useGameUI() {
   const [state, send] = useMachine(gameUiMachine);
   const {
-    joinGame,
     makeChoice,
     resetGame,
     room,
@@ -16,6 +15,7 @@ export function useGameUI() {
     error,
     isConnected,
     sendInput,
+    joinGame,
   } = useGameRoom();
   const { player } = usePlayer(room);
 
@@ -40,15 +40,16 @@ export function useGameUI() {
     }
   }, [scene, state, send]);
 
-  function startGame(name: string) {
-    send({ type: 'START', name });
-    joinGame(name).catch(e => console.log(e));
-  }
+  const startGame = useCallback(() => {
+    send({ type: 'START' });
+    // trigger the actual Colyseus join flow
+    void joinGame();
+  }, [send, joinGame]);
 
-  function restartGame() {
+  const restartGame = useCallback(() => {
     send({ type: 'RESET' });
     resetGame();
-  }
+  }, [send, resetGame]);
 
   return {
     state,

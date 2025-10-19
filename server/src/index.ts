@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
 import { attachColyseus } from './colyseus';
+import container from './container';
 import { createApp } from './server';
 
 // Define the absolute path to the certificates from the server project's location
@@ -23,11 +24,11 @@ dotenv.config();
 const port = Number(process.env.PORT ?? 2567);
 
 // Create an Express app and Node HTTP server
-const app = createApp();
+const app = createApp(container);
 const httpServer = https.createServer(options, app);
 
 // Attach Colyseus to the HTTP server
-attachColyseus(httpServer);
+attachColyseus(httpServer, container);
 
 // Start listening
 
