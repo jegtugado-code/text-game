@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router';
+import { NavLink, useNavigate } from 'react-router';
 
 import { constants } from '../constants';
 import { useAuth } from '../contexts';
@@ -43,20 +43,20 @@ export const Navbar = ({ onMenuClick }: NavbarProps) => {
       </div>
 
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl" href="/">
+        <NavLink className="btn btn-ghost text-xl" to="/">
           {constants.AppName}
-        </a>
+        </NavLink>
       </div>
 
       {/* Right side */}
       {!isAuthenticated && (
         <div className="flex gap-2">
-          <a className="btn btn-outline btn-sm" href="/login">
+          <NavLink className="btn btn-outline btn-sm" to="/login">
             Login
-          </a>
-          <a className="btn btn-primary btn-sm" href="/register">
+          </NavLink>
+          <NavLink className="btn btn-primary btn-sm" to="/register">
             Register
-          </a>
+          </NavLink>
         </div>
       )}
 

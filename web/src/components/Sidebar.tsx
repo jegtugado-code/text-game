@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { NavLink } from 'react-router';
 
 export interface SidebarProps {
   mobile?: boolean;
@@ -50,16 +51,9 @@ const Menu = () => {
   return (
     <ul className="menu w-full p-0">
       <li>
-        <a className="rounded-none">Dashboard</a>
-      </li>
-      <li>
-        <a className="rounded-none">Projects</a>
-      </li>
-      <li>
-        <a className="rounded-none">Tasks</a>
-      </li>
-      <li>
-        <a className="rounded-none">Team</a>
+        <NavLink className="rounded-none" to="#">
+          Dashboard
+        </NavLink>
       </li>
     </ul>
   );
