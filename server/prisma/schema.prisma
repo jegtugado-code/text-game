@@ -18,4 +18,49 @@ model User {
   email        String   @unique
   passwordHash String
   createdAt    DateTime @default(now())
+  Player       Player?
+}
+
+model Player {
+  id     String @id @default(uuid()) @db.Uuid
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique @db.Uuid
+
+  name           String? // optional display name
+  currentChapter String // chapter id string
+  currentScene   String // scene id string (dynamic scenes supported)
+  visitedScenes  Json    @default("[]") // array of scene ids (JSON)
+  choicesMade    Json    @default("[]") // array of choice ids or scene ids if you prefer
+  inventory      Json    @default("[]") // array of item objects, denormalized
+  stats          Json    @default("{}") // map/dict of statName->value
+  level          Int     @default(1)
+  xp             Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  achievements PlayerAchievement[] // relation
+}
+
+model Achievement {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique // machine-friendly key (e.g., "first_blood")
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+
+  players PlayerAchievement[]
+}
+
+model PlayerAchievement {
+  id            String      @id @default(uuid()) @db.Uuid
+  player        Player      @relation(fields: [playerId], references: [id])
+  playerId      String      @db.Uuid
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  achievementId String      @db.Uuid
+
+  progress Json? // optional: store progress/metadata
+  earnedAt DateTime @default(now())
+
+  @@unique([playerId, achievementId])
 }
