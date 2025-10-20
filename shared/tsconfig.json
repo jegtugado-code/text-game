@@ -3,13 +3,15 @@
     /* --- Core build options --- */
     "composite": true, // required for project references
     "declaration": true, // emit .d.ts files for type sharing
+    "declarationMap": true, // useful for debugging type definitions
+    "emitDeclarationOnly": false, // emit both .js and .d.ts
     "outDir": "dist", // compiled output
     "rootDir": "src",
 
     /* --- Language and runtime --- */
     "target": "ES2022",
     "module": "ES2022",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler", // ✅ change: aligns with your other projects (server + web)
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,

@@ -5,6 +5,10 @@
   "description": "Shared game logic and schema for the text-game project",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    "import": "./dist/index.js",
+    "default": "./dist/index.js"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf dist",

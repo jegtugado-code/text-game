@@ -11,7 +11,12 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "useDefineForClassFields": false,
-    "typeRoots": ["node_modules/@types", "src/types"]
+    "typeRoots": ["node_modules/@types", "src/types"],
+    "baseUrl": ".",
+    "paths": {
+      "@text-game/shared": ["../shared/dist"],
+      "@text-game/shared/*": ["../shared/dist/*"]
+    }
   },
   "include": ["src", "src/types/*.d.ts"],
   "references": [{ "path": "../shared" }]

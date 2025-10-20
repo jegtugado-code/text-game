@@ -6,16 +6,21 @@ import {
   Player,
   RemoveItemEffect,
   Scene,
+  ItemJSON,
+  jsonToItem,
+  jsonToPlayer,
+  playerToJSON,
 } from '@text-game/shared';
 import { Room, Client, ServerError } from 'colyseus';
 
 import sceneData from '../../data/intro-scene-data.json';
 import itemData from '../../data/items.json';
 // import sceneData from '../../data/test-scene-data.json';
+import { IPlayerService } from '../../services/player-service';
 import type { ITokenService, JwtPayload } from '../../services/token-service';
 import { createChoiceFromJson } from '../factories/choice-factory';
 import { createEffectFromJson } from '../factories/effect-factory';
-import { createItemFromJson } from '../factories/item-factory';
+import { dbPlayerToJSON } from '../mappers/db-player-mapper';
 
 interface ChoiceMessage {
   choice: string; // label of the choice in the current scene
@@ -64,6 +69,7 @@ export interface GameRoomMetadata {
 
 export class GameRoom extends Room<GameState, GameRoomMetadata> {
   public tokenService!: ITokenService;
+  public playerService!: IPlayerService;
 
   async onAuth(client: Client, options: GameRoomOptions) {
     if (!options.token) {
@@ -187,22 +193,56 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
     });
   }
 
-  onJoin(client: Client, options: GameRoomOptions, user: JwtPayload) {
+  async onJoin(client: Client, options: GameRoomOptions, user: JwtPayload) {
     console.log(client.sessionId, '-', user.email, 'joined!');
 
-    this.state.createPlayer(client.sessionId, user.email as string);
+    const dbPlayer = await this.playerService.loadOrCreatePlayerForUser(
+      user.sub!
+    );
 
-    const player = this.state.players.get(client.sessionId);
-    if (!player) return;
+    // dbPlayerToJSON returns a PlayerJSON which jsonToPlayer accepts.
+    // Narrow the return type to satisfy the linter and avoid unsafe assignments.
 
-    player.currentScene = FixedSceneKeys.Start;
+    const json = dbPlayerToJSON(dbPlayer);
+
+    const player = jsonToPlayer(json);
+
+    // ensure session id key is set to this client's session
+    this.state.players.set(client.sessionId, player);
 
     // Send the first scene (prepared per-player copy)
     client.send('scene', prepareSceneForPlayer(player, FixedSceneKeys.Start));
   }
 
-  onLeave(client: Client, _consented: boolean) {
-    console.log(client.sessionId, 'left!');
+  async onLeave(client: Client, _consented: boolean) {
+    const player = this.state.players.get(client.sessionId);
+    if (!player) {
+      return;
+    }
+
+    // determine the userId from room metadata (set in onAuth)
+    const userId = this.metadata.userId;
+    if (!userId) {
+      // fallback: remove player and return if we can't resolve a user id
+      this.state.removePlayer(client.sessionId);
+      return;
+    }
+
+    // serialize player state using mapper and save
+    const json = playerToJSON(player);
+
+    await this.playerService.savePlayerState(userId, {
+      name: json.name ?? undefined,
+      currentChapter: json.currentChapter ?? 'intro',
+      currentScene: json.currentScene ?? undefined,
+      visitedScenes: json.choices ?? [],
+      choicesMade: json.choices ?? [],
+      inventory: json.inventory ?? [],
+      stats: json.stats ?? undefined,
+      level: (player as unknown as { level?: number }).level ?? 1,
+      xp: (player as unknown as { xp?: number }).xp ?? 0,
+    });
+
     this.state.removePlayer(client.sessionId);
   }
 
@@ -215,11 +255,12 @@ function applyEffect(player: Player, effect: Effect) {
   if (effect instanceof AddItemEffect) {
     const itemJson = itemData.find(i => i.id === effect.itemId);
     if (!itemJson) return;
-    const item = createItemFromJson(itemJson);
+    const item = jsonToItem(itemJson as ItemJSON);
     player.inventory.push(item);
   } else if (effect instanceof RemoveItemEffect) {
     const itemJson = itemData.find(i => i.id === effect.itemId);
-    const item = createItemFromJson(itemJson);
+    if (!itemJson) return;
+    const item = jsonToItem(itemJson as ItemJSON);
     const index = player.inventory.findIndex(i => i.id === item.id);
     if (index !== -1) {
       player.inventory.splice(index, 1);

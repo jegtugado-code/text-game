@@ -13,7 +13,7 @@ export const StatsCard: React.FC<Props> = ({ stats }) => {
         <div className="space-y-2">
           {Object.entries(stats ?? {}).map(([key, value]) => (
             <div key={key} className="flex items-center justify-between gap-3">
-              <span className="w-16 text-sm capitalize opacity-70">{key}:</span>
+              <span className="w-24 text-sm capitalize opacity-70">{key}:</span>
               <div className="flex items-center gap-2 flex-1">
                 <progress
                   className="progress progress-primary w-full"
