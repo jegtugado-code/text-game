@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { asValue, createContainer, InjectionMode, Lifetime } from 'awilix';
 
 import { prisma } from './db/prisma';
+import { EnvConfig } from './env-config';
 
 const container = createContainer({
   injectionMode: InjectionMode.PROXY,
@@ -26,6 +27,8 @@ await container.loadModules([servicesPath], {
 container.register({
   // Register the Prisma client instance as a singleton value
   prisma: asValue(prisma),
+  // Register the environment configuration as a singleton value
+  envConfig: asValue(EnvConfig),
 });
 
 export default container;

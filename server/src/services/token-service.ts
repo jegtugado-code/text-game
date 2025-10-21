@@ -1,5 +1,6 @@
 import { User } from '@prisma/client';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
+import { EnvConfigType } from 'src/env-config';
 import { v7 } from 'uuid';
 
 export interface ITokenService {
@@ -10,15 +11,14 @@ export interface ITokenService {
 export type { JwtPayload };
 
 export default class TokenService implements ITokenService {
-  private readonly jwtSecret: string;
+  private readonly envConfig: EnvConfigType;
 
-  constructor() {
-    this.jwtSecret = process.env.JWT_SECRET ?? '';
+  constructor({ envConfig }: { envConfig: EnvConfigType }) {
+    this.envConfig = envConfig;
   }
 
   public generateToken(user: User) {
-    if (!this.jwtSecret) {
-      console.error('JWT_SECRET environment variable not set!');
+    if (!this.envConfig.jwt.secret) {
       throw new Error('Server configuration error.');
     }
     const payload = {
@@ -26,29 +26,28 @@ export default class TokenService implements ITokenService {
       // You could add other non-sensitive data like roles here, e.g., 'role': 'user'
     };
     const jwtid = v7();
-    const expiresIn = Number(process.env.JWT_EXPIRES_IN) ?? 3600;
+    const expiresIn = this.envConfig.jwt.expiresIn;
     const options: jwt.SignOptions = {
       expiresIn: expiresIn,
       subject: user.id,
-      issuer: process.env.JWT_ISSUER,
-      audience: process.env.JWT_AUDIENCE,
+      issuer: this.envConfig.jwt.issuer,
+      audience: this.envConfig.jwt.audience,
       jwtid: jwtid,
     };
-    const accessToken = jwt.sign(payload, this.jwtSecret, options);
+    const accessToken = jwt.sign(payload, this.envConfig.jwt.secret, options);
 
     return accessToken;
   }
 
   public verifyToken(token: string) {
-    if (!this.jwtSecret) {
-      console.error('JWT_SECRET environment variable not set!');
+    if (!this.envConfig.jwt.secret) {
       throw new Error('Server configuration error.');
     }
 
     try {
-      const decoded = jwt.verify(token, this.jwtSecret, {
-        issuer: process.env.JWT_ISSUER,
-        audience: process.env.JWT_AUDIENCE,
+      const decoded = jwt.verify(token, this.envConfig.jwt.secret, {
+        issuer: this.envConfig.jwt.issuer,
+        audience: this.envConfig.jwt.audience,
       });
 
       // decoded will contain all standard and custom claims
