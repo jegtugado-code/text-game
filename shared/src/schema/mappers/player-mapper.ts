@@ -9,9 +9,10 @@ export interface PlayerJSON {
   name?: string;
   currentChapter?: string | null;
   currentScene?: string | null;
-  choices?: string[] | null;
-  inventory?: ItemJSON[] | null;
-  stats?: Stats | null;
+  visitedScenes: string[];
+  choicesMade: string[];
+  inventory: ItemJSON[];
+  stats: Stats;
   level: number;
   xp: number;
 }
@@ -21,9 +22,9 @@ export function jsonToPlayer(json: PlayerJSON): Player {
   p.name = json.name ?? '';
   p.currentChapter = json.currentChapter ?? '';
   p.currentScene = String(json.currentScene);
-  p.choices = new ArraySchema<string>();
-  if (Array.isArray(json.choices))
-    for (const c of json.choices) p.choices.push(c);
+  p.choicesMade = new ArraySchema<string>();
+  if (Array.isArray(json.choicesMade))
+    for (const c of json.choicesMade) p.choicesMade.push(c);
   p.inventory = jsonArrayToItems(json.inventory ?? undefined);
   p.stats = new MapSchema<number>();
   if (json.stats && typeof json.stats === 'object') {
@@ -55,9 +56,21 @@ export function playerToJSON(player: Player): PlayerJSON {
     name: player.name || undefined,
     currentChapter: player.currentChapter || undefined,
     currentScene: player.currentScene || undefined,
-    choices: Array.isArray(player.choices) ? [...player.choices] : undefined,
+    visitedScenes: Array.isArray(player.visitedScenes)
+      ? [...player.visitedScenes]
+      : [],
+    choicesMade: Array.isArray(player.choicesMade)
+      ? [...player.choicesMade]
+      : [],
     inventory: itemsToJSONArray(player.inventory),
-    stats: statsObj,
+    stats: statsObj ?? {
+      health: 100,
+      strength: 5,
+      vitality: 5,
+      intelligence: 5,
+      dexterity: 5,
+      agility: 5,
+    },
     level: player.level,
     xp: player.xp,
   };

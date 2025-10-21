@@ -1,15 +1,13 @@
-import type { Scene } from '@text-game/shared';
+import type { PlayerJSON, Scene } from '@text-game/shared';
 import React, { useState } from 'react';
 
-import type { PlayerInterface } from '../../features/game';
 import { GameText } from '../GameText';
 
 interface Props {
-  player: PlayerInterface | null;
+  player: PlayerJSON | null;
   scene: Scene;
   onChoose: (choiceId: string) => void;
   onSubmitInput: (value: string) => void;
-  onRestart: () => void;
 }
 
 export const ScenePanel: React.FC<Props> = ({
@@ -17,7 +15,6 @@ export const ScenePanel: React.FC<Props> = ({
   scene,
   onChoose,
   onSubmitInput,
-  onRestart,
 }) => {
   const [isTitleStreaming, setIsTitleStreaming] = useState(true);
   const [isTextStreaming, setIsTextStreaming] = useState(false);
@@ -35,7 +32,7 @@ export const ScenePanel: React.FC<Props> = ({
             onStreamingChange={setIsTitleStreaming}
           />
           <span className="badge badge-primary self-center">
-            {player?.choices.length ? player.choices.length - 1 : 0}
+            {player?.choicesMade.length ? player.choicesMade.length - 1 : 0}
           </span>
         </div>
         {!isTitleStreaming && (
@@ -98,15 +95,6 @@ export const ScenePanel: React.FC<Props> = ({
               {choice.label}
             </button>
           ))}
-          {scene.isEnding && (
-            <button
-              onClick={() => onRestart()}
-              className="btn btn-secondary ml-auto"
-              disabled={isStreaming}
-            >
-              Restart
-            </button>
-          )}
         </div>
       </div>
     </div>

@@ -9,8 +9,7 @@ export const gameUiMachine = setup({
       | { type: 'START' }
       | { type: 'JOIN_SUCCESS' }
       | { type: 'JOIN_FAIL'; error: string }
-      | { type: 'SCENE_UPDATE' }
-      | { type: 'RESET' },
+      | { type: 'SCENE_UPDATE' },
   },
 }).createMachine({
   id: 'game-ui',
@@ -41,14 +40,11 @@ export const gameUiMachine = setup({
     playing: {
       on: {
         SCENE_UPDATE: 'playing',
-        RESET: 'idle',
       },
     },
 
     error: {
-      on: {
-        RESET: 'idle',
-      },
+      on: {},
     },
   },
 });

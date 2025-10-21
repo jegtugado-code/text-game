@@ -50,19 +50,12 @@ export function useGameRoom() {
     if (!room) return;
     // send the stable choice id (server will fallback to label matching
     // if an older scene JSON/client doesn't include ids yet)
-    room.send('choice', { choice: choiceId });
+    room.send('choice', { choiceId });
   }
 
   function sendInput(value: string) {
     if (!room) return;
     room.send('input', { value });
-  }
-
-  function resetGame() {
-    if (!room) return;
-    room.send('reset');
-    setScene(null);
-    setError(null);
   }
 
   useEffect(() => {
@@ -75,7 +68,6 @@ export function useGameRoom() {
     joinGame,
     makeChoice,
     sendInput,
-    resetGame,
     room,
     scene,
     error,

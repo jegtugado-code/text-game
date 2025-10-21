@@ -1,8 +1,8 @@
-import type { Item } from '@text-game/shared';
+import type { ItemJSON } from '@text-game/shared';
 import React from 'react';
 
 interface Props {
-  inventory?: Item[];
+  inventory?: ItemJSON[];
 }
 
 export const InventoryCard: React.FC<Props> = ({ inventory }) => {
@@ -25,7 +25,7 @@ export const InventoryCard: React.FC<Props> = ({ inventory }) => {
   );
 };
 
-function getItemColor(item: Item) {
+function getItemColor(item: ItemJSON) {
   switch (item.type) {
     case 'consumable':
       return 'badge-success';

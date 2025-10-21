@@ -7,16 +7,8 @@ import { gameUiMachine } from './game-ui-machine';
 
 export function useGameUI() {
   const [state, send] = useMachine(gameUiMachine);
-  const {
-    makeChoice,
-    resetGame,
-    room,
-    scene,
-    error,
-    isConnected,
-    sendInput,
-    joinGame,
-  } = useGameRoom();
+  const { makeChoice, room, scene, error, isConnected, sendInput, joinGame } =
+    useGameRoom();
   const { player } = usePlayer(room);
 
   // 🔹 When connected successfully
@@ -46,11 +38,6 @@ export function useGameUI() {
     void joinGame();
   }, [send, joinGame]);
 
-  const restartGame = useCallback(() => {
-    send({ type: 'RESET' });
-    resetGame();
-  }, [send, resetGame]);
-
   return {
     state,
     send,
@@ -59,7 +46,6 @@ export function useGameUI() {
     makeChoice,
     sendInput,
     startGame,
-    restartGame,
     isConnected,
     error,
   };

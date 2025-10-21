@@ -8,8 +8,9 @@ export function dbPlayerToJSON(dbPlayer: DbPlayer): PlayerJSON {
     xp: dbPlayer.xp,
     currentChapter: dbPlayer.currentChapter ?? undefined,
     currentScene: dbPlayer.currentScene ?? undefined,
-    choices: dbPlayer.choicesMade as string[] | undefined,
-    inventory: dbPlayer.inventory as unknown as ItemJSON[] | null | undefined,
+    visitedScenes: dbPlayer.visitedScenes as string[],
+    choicesMade: dbPlayer.choicesMade as string[],
+    inventory: dbPlayer.inventory as unknown as ItemJSON[],
     stats: dbPlayer.stats as Stats,
   };
 }

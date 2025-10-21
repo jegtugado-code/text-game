@@ -1,22 +1,9 @@
-import { Player, PrismaClient } from '@prisma/client';
-import { Stats } from '@text-game/shared';
+import { Player, PrismaClient, Prisma } from '@prisma/client';
+import { PlayerJSON } from '@text-game/shared';
 
 export interface IPlayerService {
   loadOrCreatePlayerForUser(userId: string): Promise<Player>;
-  savePlayerState(
-    userId: string,
-    statePatch: {
-      name?: string;
-      currentChapter: string;
-      currentScene?: string;
-      visitedScenes?: string[];
-      choicesMade?: string[];
-      inventory?: any[];
-      stats?: Stats;
-      level?: number;
-      xp?: number;
-    }
-  ): Promise<Player>;
+  savePlayerState(userId: string, statePatch: PlayerJSON): Promise<Player>;
 }
 
 export default class PlayerService implements IPlayerService {
@@ -61,33 +48,30 @@ export default class PlayerService implements IPlayerService {
     return created;
   }
 
-  async savePlayerState(
-    userId: string,
-    statePatch: {
-      name?: string;
-      currentChapter: string;
-      currentScene?: string;
-      visitedScenes?: string[];
-      choicesMade?: string[];
-      inventory?: any[];
-      stats?: Stats;
-      level?: number;
-      xp?: number;
-    }
-  ) {
+  async savePlayerState(userId: string, statePatch: PlayerJSON) {
     // Upsert or update directly. Here we update by userId.
     return this.prisma.player.upsert({
       where: { userId },
       update: {
-        ...statePatch,
-      },
-      create: {
-        user: { connect: { id: userId } },
-        currentChapter: statePatch.currentChapter,
+        currentChapter: String(statePatch.currentChapter),
         currentScene: statePatch.currentScene ?? 'start',
         visitedScenes: statePatch.visitedScenes ?? [],
         choicesMade: statePatch.choicesMade ?? [],
-        inventory: statePatch.inventory ?? [],
+        inventory: (statePatch.inventory ??
+          []) as unknown as Prisma.InputJsonArray,
+        stats: JSON.stringify(statePatch.stats ?? {}),
+        level: statePatch.level ?? 1,
+        xp: statePatch.xp ?? 0,
+        name: statePatch.name ?? null,
+      },
+      create: {
+        user: { connect: { id: userId } },
+        currentChapter: String(statePatch.currentChapter),
+        currentScene: statePatch.currentScene ?? 'start',
+        visitedScenes: statePatch.visitedScenes ?? [],
+        choicesMade: statePatch.choicesMade ?? [],
+        inventory: (statePatch.inventory ??
+          []) as unknown as Prisma.InputJsonArray,
         stats: statePatch.stats ?? {},
         level: statePatch.level ?? 1,
         xp: statePatch.xp ?? 0,

@@ -23,7 +23,7 @@ import { createEffectFromJson } from '../factories/effect-factory';
 import { dbPlayerToJSON } from '../mappers/db-player-mapper';
 
 interface ChoiceMessage {
-  choice: string; // label of the choice in the current scene
+  choiceId: string; // id of the choice selected
 }
 
 interface InputMessage {
@@ -107,21 +107,19 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
 
     // Handle player making a choice
     this.onMessage<ChoiceMessage>('choice', (client: Client, message) => {
-      const player = this.state.players.get(client.sessionId);
+      const player = this.state.player;
       if (!player) return;
       const currentScene = { ...scenes[player.currentScene] };
       // Basic validation
-      const incoming =
-        typeof message?.choice === 'string' ? message.choice.trim() : '';
-      if (!incoming) {
+      const choiceId = message.choiceId;
+      if (!choiceId) {
         client.send('error', { message: 'Invalid choice' });
         return;
       }
 
       // Find the choice by stable id first, fallback to label for
       // backwards-compatibility with older clients that send labels.
-      let chosen = currentScene.choices.find(c => c.id === incoming);
-      chosen ??= currentScene.choices.find(_ => _.label === incoming);
+      const chosen = currentScene.choices.find(c => c.id === choiceId);
       if (chosen) {
         // Apply any effects based on the chosen choice
         if (chosen.effects) {
@@ -150,7 +148,7 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
 
     // Handle text input from player for scenes that request input
     this.onMessage<InputMessage>('input', (client: Client, message) => {
-      const player = this.state.players.get(client.sessionId);
+      const player = this.state.player;
       if (!player) return;
 
       const currentScene = scenes[player.currentScene];
@@ -174,26 +172,11 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
 
       // Advance to the configured next scene
       const next = String(currentScene.inputNextScene);
-      player.currentScene = next;
       client.send('scene', prepareSceneForPlayer(player, next));
-    });
-
-    this.onMessage('reset', (client: Client) => {
-      const player = this.state.players.get(client.sessionId);
-      if (!player) return;
-
-      // Reset player state
-      player.currentScene = FixedSceneKeys.Start;
-      player.choices.clear();
-      player.inventory.clear();
-      player.stats.clear();
-
-      // Send the first scene
-      client.send('scene', prepareSceneForPlayer(player, FixedSceneKeys.Start));
     });
   }
 
-  async onJoin(client: Client, options: GameRoomOptions, user: JwtPayload) {
+  async onJoin(client: Client, _options: GameRoomOptions, user: JwtPayload) {
     console.log(client.sessionId, '-', user.email, 'joined!');
 
     const dbPlayer = await this.playerService.loadOrCreatePlayerForUser(
@@ -208,14 +191,14 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
     const player = jsonToPlayer(json);
 
     // ensure session id key is set to this client's session
-    this.state.players.set(client.sessionId, player);
+    this.state.player = null;
 
     // Send the first scene (prepared per-player copy)
     client.send('scene', prepareSceneForPlayer(player, FixedSceneKeys.Start));
   }
 
-  async onLeave(client: Client, _consented: boolean) {
-    const player = this.state.players.get(client.sessionId);
+  async onLeave(_client: Client, _consented: boolean) {
+    const player = this.state.player;
     if (!player) {
       return;
     }
@@ -224,26 +207,16 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
     const userId = this.metadata.userId;
     if (!userId) {
       // fallback: remove player and return if we can't resolve a user id
-      this.state.removePlayer(client.sessionId);
+      this.state.player = null;
       return;
     }
 
     // serialize player state using mapper and save
     const json = playerToJSON(player);
 
-    await this.playerService.savePlayerState(userId, {
-      name: json.name ?? undefined,
-      currentChapter: json.currentChapter ?? 'intro',
-      currentScene: json.currentScene ?? undefined,
-      visitedScenes: json.choices ?? [],
-      choicesMade: json.choices ?? [],
-      inventory: json.inventory ?? [],
-      stats: json.stats ?? undefined,
-      level: (player as unknown as { level?: number }).level ?? 1,
-      xp: (player as unknown as { xp?: number }).xp ?? 0,
-    });
+    await this.playerService.savePlayerState(userId, json);
 
-    this.state.removePlayer(client.sessionId);
+    this.state.player = null;
   }
 
   onDispose() {
@@ -278,7 +251,11 @@ function applyEffect(player: Player, effect: Effect) {
  * This prevents mutation of the global `scenes` object and filters
  * choices according to the player's inventory and previous choices.
  */
-function prepareSceneForPlayer(player: Player, sceneId: string) {
+function prepareSceneForPlayer(
+  player: Player,
+  sceneId: string,
+  choiceId?: string
+) {
   const original = scenes[sceneId];
   if (!original) return undefined;
 
@@ -299,9 +276,9 @@ function prepareSceneForPlayer(player: Player, sceneId: string) {
         case 'noItem':
           return player.inventory.findIndex(item => item.id === _.value) === -1;
         case 'choiceMade':
-          return player.choices.includes(_.value);
+          return player.choicesMade.includes(_.value);
         case 'noChoiceMade':
-          return !player.choices.includes(_.value);
+          return !player.choicesMade.includes(_.value);
         default:
           return false;
       }
@@ -313,8 +290,13 @@ function prepareSceneForPlayer(player: Player, sceneId: string) {
     copy.effects.forEach(effect => applyEffect(player, effect));
   }
 
-  player.choices.push(sceneId);
-  player.currentScene = sceneId;
+  if (choiceId) {
+    player.choicesMade.push(choiceId);
+  }
+  if (sceneId) {
+    player.visitedScenes.push(player.currentScene);
+    player.currentScene = sceneId;
+  }
 
   return copy;
 }

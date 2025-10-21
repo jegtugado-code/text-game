@@ -7,15 +7,8 @@ import { StatsCard } from '../../components/game/StatsCard';
 import { useGameUI } from '../../xstate/use-game-ui';
 
 export function Game() {
-  const {
-    state,
-    scene,
-    player,
-    startGame,
-    makeChoice,
-    restartGame,
-    sendInput,
-  } = useGameUI();
+  const { state, scene, player, startGame, makeChoice, sendInput } =
+    useGameUI();
 
   const isIdle = state.matches('idle');
 
@@ -59,7 +52,6 @@ export function Game() {
             scene={scene}
             onChoose={makeChoice}
             onSubmitInput={sendInput}
-            onRestart={restartGame}
           />
         </div>
 

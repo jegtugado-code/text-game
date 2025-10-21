@@ -1,9 +1,8 @@
+import type { PlayerJSON } from '@text-game/shared';
 import React from 'react';
 
-import type { PlayerInterface } from '../../features/game';
-
 interface Props {
-  player: PlayerInterface | null;
+  player: PlayerJSON | null;
 }
 
 export const PlayerInfoCard: React.FC<Props> = ({ player }) => {
@@ -13,7 +12,9 @@ export const PlayerInfoCard: React.FC<Props> = ({ player }) => {
         <h3 className="card-title">Player Info</h3>
         <div className="flex justify-between items-center">
           <span className="text-sm opacity-70">Name:</span>
-          <div className="badge badge-primary badge-lg">{player?.name}</div>
+          <div className="badge badge-primary badge-lg">
+            {player?.name ?? 'N/A'}
+          </div>
         </div>
       </div>
     </div>
