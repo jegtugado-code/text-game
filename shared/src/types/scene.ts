@@ -1,4 +1,4 @@
-import { Effect } from '../schema';
+import { EffectJSON } from '../schema';
 
 import { Choice } from './choice';
 import { Condition } from './condition';
@@ -8,7 +8,7 @@ export interface Scene {
   text: string; // Story/narrative for this scene
   choices: Choice[]; // List of available choices
   isEnding?: boolean; // Marks if this scene ends the game
-  effects?: Effect[]; // Optional: stats or inventory changes
+  effects?: EffectJSON[]; // Optional: stats or inventory changes
   conditions?: Condition[]; // Optional: restrict access based on previous choices or inventory
   // Optional prompt to request text input from the player. When present,
   // the client should render an input box and submit via an 'input' message.

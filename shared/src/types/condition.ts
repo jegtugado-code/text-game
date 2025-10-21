@@ -1,6 +1,6 @@
 export interface Condition {
   type: ConditionType;
-  value: string; // item ID or choice ID
+  value: string;
 }
 
 export type ConditionType =

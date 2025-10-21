@@ -10,8 +10,11 @@ export function usePlayer(room: Colyseus.Room<GameState> | null) {
 
     const $ = Colyseus.getStateCallbacks(room);
 
-    $(room.state).player.onChange(() => {
-      setPlayer(room.state.player ? playerToJSON(room.state.player) : null);
+    $(room.state).listen('player', (v, _pv) => {
+      setPlayer(playerToJSON(v));
+      $(room.state.player).onChange(() => {
+        setPlayer(playerToJSON(room.state.player));
+      });
     });
   }, [room]);
 

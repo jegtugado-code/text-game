@@ -10,6 +10,9 @@ import {
   jsonToItem,
   jsonToPlayer,
   playerToJSON,
+  Choice,
+  EffectJSON,
+  jsonToEffect,
 } from '@text-game/shared';
 import { Room, Client, ServerError } from 'colyseus';
 
@@ -18,8 +21,6 @@ import itemData from '../../data/items.json';
 // import sceneData from '../../data/test-scene-data.json';
 import { IPlayerService } from '../../services/player-service';
 import type { ITokenService, JwtPayload } from '../../services/token-service';
-import { createChoiceFromJson } from '../factories/choice-factory';
-import { createEffectFromJson } from '../factories/effect-factory';
 import { dbPlayerToJSON } from '../mappers/db-player-mapper';
 
 interface ChoiceMessage {
@@ -45,8 +46,8 @@ const scenes: Record<string, Scene> = Object.fromEntries(
     id,
     {
       ...scene,
-      choices: (scene.choices ?? []).map(createChoiceFromJson),
-      effects: (scene.effects ?? []).map(createEffectFromJson),
+      choices: (scene.choices ?? []) as Choice[],
+      effects: (scene.effects ?? []) as EffectJSON[],
     } as Scene,
   ])
 );
@@ -120,30 +121,41 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
       // Find the choice by stable id first, fallback to label for
       // backwards-compatibility with older clients that send labels.
       const chosen = currentScene.choices.find(c => c.id === choiceId);
-      if (chosen) {
-        // Apply any effects based on the chosen choice
-        if (chosen.effects) {
-          chosen.effects.forEach(effect => applyEffect(player, effect));
-        }
 
-        // Evaluate player health (after applying choice effects)
-        const playerHealth = player.stats.get('health');
-        if (playerHealth && playerHealth <= 0) {
-          // send death scene
-          client.send(
-            'scene',
-            prepareSceneForPlayer(player, FixedSceneKeys.Death)
-          );
-          return;
-        }
-
-        const targetSceneId = chosen.nextScene;
-
-        // Send a prepared (filtered) copy of the scene to the client
-        client.send('scene', prepareSceneForPlayer(player, targetSceneId));
-      } else {
+      if (!chosen) {
         client.send('error', { message: 'Invalid choice!' });
+        return;
       }
+
+      // Apply any effects based on the chosen choice
+      if (chosen.effects) {
+        chosen.effects.forEach(effect =>
+          applyEffect(player, jsonToEffect(effect))
+        );
+      }
+
+      // Evaluate player health (after applying choice effects)
+      const playerHealth = player.stats.get('health');
+      if (playerHealth && playerHealth <= 0) {
+        // send death scene
+        const next = prepareSceneForPlayer(
+          player,
+          FixedSceneKeys.Death,
+          chosen.id
+        );
+        client.send('scene', next);
+        const json = playerToJSON(player);
+        void this.playerService.savePlayerState(this.metadata.userId, json);
+        return;
+      }
+
+      // Advance to the configured next scene
+      const targetSceneId = chosen.nextScene;
+
+      const next = prepareSceneForPlayer(player, targetSceneId, chosen.id);
+      client.send('scene', next);
+      const json = playerToJSON(player);
+      void this.playerService.savePlayerState(this.metadata.userId, json);
     });
 
     // Handle text input from player for scenes that request input
@@ -171,52 +183,42 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
       }
 
       // Advance to the configured next scene
-      const next = String(currentScene.inputNextScene);
-      client.send('scene', prepareSceneForPlayer(player, next));
+      const targetSceneId = String(currentScene.inputNextScene);
+
+      const next = prepareSceneForPlayer(player, targetSceneId);
+      client.send('scene', next);
+      const json = playerToJSON(player);
+      void this.playerService.savePlayerState(this.metadata.userId, json);
     });
   }
 
   async onJoin(client: Client, _options: GameRoomOptions, user: JwtPayload) {
     console.log(client.sessionId, '-', user.email, 'joined!');
 
+    // Load or create player for this user
     const dbPlayer = await this.playerService.loadOrCreatePlayerForUser(
       user.sub!
     );
-
-    // dbPlayerToJSON returns a PlayerJSON which jsonToPlayer accepts.
-    // Narrow the return type to satisfy the linter and avoid unsafe assignments.
-
     const json = dbPlayerToJSON(dbPlayer);
-
     const player = jsonToPlayer(json);
 
-    // ensure session id key is set to this client's session
-    this.state.player = null;
+    console.log(`Loaded player for user ${user.email}:`, player.name);
 
-    // Send the first scene (prepared per-player copy)
-    client.send('scene', prepareSceneForPlayer(player, FixedSceneKeys.Start));
+    const next = prepareSceneForPlayer(player, player.currentScene);
+    this.state.player = player;
+    client.send('scene', next);
   }
 
-  async onLeave(_client: Client, _consented: boolean) {
-    const player = this.state.player;
-    if (!player) {
-      return;
-    }
-
-    // determine the userId from room metadata (set in onAuth)
+  async onLeave(_client: Client, consented: boolean) {
     const userId = this.metadata.userId;
-    if (!userId) {
-      // fallback: remove player and return if we can't resolve a user id
-      this.state.player = null;
+
+    if (!consented || !userId) {
       return;
     }
 
-    // serialize player state using mapper and save
+    const player = this.state.player;
     const json = playerToJSON(player);
-
     await this.playerService.savePlayerState(userId, json);
-
-    this.state.player = null;
   }
 
   onDispose() {
@@ -287,16 +289,19 @@ function prepareSceneForPlayer(
 
   // apply scene effects immediately
   if (copy.effects) {
-    copy.effects.forEach(effect => applyEffect(player, effect));
+    copy.effects.forEach(effect => applyEffect(player, jsonToEffect(effect)));
   }
 
   if (choiceId) {
     player.choicesMade.push(choiceId);
   }
-  if (sceneId) {
+  if (
+    player.visitedScenes[player.visitedScenes.length - 1] !==
+    player.currentScene
+  ) {
     player.visitedScenes.push(player.currentScene);
-    player.currentScene = sceneId;
   }
+  player.currentScene = sceneId;
 
   return copy;
 }

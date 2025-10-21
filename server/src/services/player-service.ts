@@ -54,12 +54,12 @@ export default class PlayerService implements IPlayerService {
       where: { userId },
       update: {
         currentChapter: String(statePatch.currentChapter),
-        currentScene: statePatch.currentScene ?? 'start',
+        currentScene: statePatch.currentScene ?? '',
         visitedScenes: statePatch.visitedScenes ?? [],
         choicesMade: statePatch.choicesMade ?? [],
         inventory: (statePatch.inventory ??
           []) as unknown as Prisma.InputJsonArray,
-        stats: JSON.stringify(statePatch.stats ?? {}),
+        stats: statePatch.stats ?? {},
         level: statePatch.level ?? 1,
         xp: statePatch.xp ?? 0,
         name: statePatch.name ?? null,
@@ -67,7 +67,7 @@ export default class PlayerService implements IPlayerService {
       create: {
         user: { connect: { id: userId } },
         currentChapter: String(statePatch.currentChapter),
-        currentScene: statePatch.currentScene ?? 'start',
+        currentScene: statePatch.currentScene ?? '',
         visitedScenes: statePatch.visitedScenes ?? [],
         choicesMade: statePatch.choicesMade ?? [],
         inventory: (statePatch.inventory ??

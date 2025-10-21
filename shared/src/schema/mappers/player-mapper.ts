@@ -22,6 +22,8 @@ export function jsonToPlayer(json: PlayerJSON): Player {
   p.name = json.name ?? '';
   p.currentChapter = json.currentChapter ?? '';
   p.currentScene = String(json.currentScene);
+  if (Array.isArray(json.visitedScenes))
+    for (const s of json.visitedScenes) p.visitedScenes.push(s);
   p.choicesMade = new ArraySchema<string>();
   if (Array.isArray(json.choicesMade))
     for (const c of json.choicesMade) p.choicesMade.push(c);
@@ -46,22 +48,14 @@ export function jsonArrayToPlayers(
 
 // --- reverse mappings: Player (Colyseus) -> JSON ---
 export function playerToJSON(player: Player): PlayerJSON {
-  const statsObj = player.stats
-    ? (Object.fromEntries(
-        Array.from(player.stats.entries())
-      ) as unknown as Stats)
-    : undefined;
+  const statsObj = Object.fromEntries(player.stats) as Stats;
 
   return {
     name: player.name || undefined,
     currentChapter: player.currentChapter || undefined,
     currentScene: player.currentScene || undefined,
-    visitedScenes: Array.isArray(player.visitedScenes)
-      ? [...player.visitedScenes]
-      : [],
-    choicesMade: Array.isArray(player.choicesMade)
-      ? [...player.choicesMade]
-      : [],
+    visitedScenes: player.visitedScenes.toArray(),
+    choicesMade: player.choicesMade.toArray(),
     inventory: itemsToJSONArray(player.inventory),
     stats: statsObj ?? {
       health: 100,
