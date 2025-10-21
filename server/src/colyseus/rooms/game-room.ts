@@ -10,8 +10,6 @@ import {
   jsonToItem,
   jsonToPlayer,
   playerToJSON,
-  Choice,
-  EffectJSON,
   jsonToEffect,
 } from '@text-game/shared';
 import { Room, Client, ServerError } from 'colyseus';
@@ -31,26 +29,7 @@ interface InputMessage {
   value: string;
 }
 
-// Lightweight JSON typing for scenes to reduce `any` usage
-interface SceneJSON {
-  title?: string;
-  text?: string;
-  choices?: unknown[];
-  effects?: unknown[];
-  isEnding?: boolean;
-  conditions?: unknown[];
-}
-
-const scenes: Record<string, Scene> = Object.fromEntries(
-  Object.entries(sceneData as Record<string, SceneJSON>).map(([id, scene]) => [
-    id,
-    {
-      ...scene,
-      choices: (scene.choices ?? []) as Choice[],
-      effects: (scene.effects ?? []) as EffectJSON[],
-    } as Scene,
-  ])
-);
+const scenes = sceneData as Record<string, Scene>;
 
 enum FixedSceneKeys {
   Start = 'start',
