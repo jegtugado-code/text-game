@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Choice-based text game using React, Node.js, WebSockets, and XState",
   "scripts": {
-    "build": "pnpm -r build",
+    "build": "pnpm --filter shared build && concurrently \"pnpm --filter web build\" \"pnpm --filter server build\"",
     "dev": "concurrently \"pnpm --filter web dev\" \"pnpm --filter server dev\"",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",

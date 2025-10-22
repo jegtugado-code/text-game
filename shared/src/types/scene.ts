@@ -1,4 +1,4 @@
-import { EffectJSON } from '../schema';
+import { EffectJSON } from '../schemas';
 
 import { Choice } from './choice';
 import { Condition } from './condition';

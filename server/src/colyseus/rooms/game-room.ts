@@ -1,10 +1,10 @@
 import {
-  AddItemEffect,
-  Effect,
+  AddItemEffectSchema,
+  EffectSchema,
   GameState,
-  ModifyStatEffect,
-  Player,
-  RemoveItemEffect,
+  ModifyStatEffectSchema,
+  PlayerSchema,
+  RemoveItemEffectSchema,
   Scene,
   ItemJSON,
   jsonToItem,
@@ -30,6 +30,7 @@ interface InputMessage {
 }
 
 const scenes = sceneData as Record<string, Scene>;
+const items = itemData as ItemJSON[];
 
 enum FixedSceneKeys {
   Start = 'start',
@@ -205,21 +206,21 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
   }
 }
 
-function applyEffect(player: Player, effect: Effect) {
-  if (effect instanceof AddItemEffect) {
-    const itemJson = itemData.find(i => i.id === effect.itemId);
+function applyEffect(player: PlayerSchema, effect: EffectSchema) {
+  if (effect instanceof AddItemEffectSchema) {
+    const itemJson = items.find(i => i.id === effect.itemId);
     if (!itemJson) return;
-    const item = jsonToItem(itemJson as ItemJSON);
+    const item = jsonToItem(itemJson);
     player.inventory.push(item);
-  } else if (effect instanceof RemoveItemEffect) {
-    const itemJson = itemData.find(i => i.id === effect.itemId);
+  } else if (effect instanceof RemoveItemEffectSchema) {
+    const itemJson = items.find(i => i.id === effect.itemId);
     if (!itemJson) return;
-    const item = jsonToItem(itemJson as ItemJSON);
+    const item = jsonToItem(itemJson);
     const index = player.inventory.findIndex(i => i.id === item.id);
     if (index !== -1) {
       player.inventory.splice(index, 1);
     }
-  } else if (effect instanceof ModifyStatEffect) {
+  } else if (effect instanceof ModifyStatEffectSchema) {
     player.stats.set(
       effect.stat,
       (player.stats.get(effect.stat) ?? 0) + effect.amount
@@ -233,7 +234,7 @@ function applyEffect(player: Player, effect: Effect) {
  * choices according to the player's inventory and previous choices.
  */
 function prepareSceneForPlayer(
-  player: Player,
+  player: PlayerSchema,
   sceneId: string,
   choiceId?: string
 ) {

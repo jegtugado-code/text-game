@@ -2,11 +2,11 @@ import { Schema, type } from '@colyseus/schema';
 
 import { EffectType, Stat } from '../types';
 
-export class Effect extends Schema {
+export class EffectSchema extends Schema {
   @type('string') type: EffectType = 'unset';
 }
 
-export class AddItemEffect extends Effect {
+export class AddItemEffectSchema extends EffectSchema {
   @type('string') itemId: string;
   constructor() {
     super();
@@ -15,7 +15,7 @@ export class AddItemEffect extends Effect {
   }
 }
 
-export class RemoveItemEffect extends Effect {
+export class RemoveItemEffectSchema extends EffectSchema {
   @type('string') itemId: string;
   constructor() {
     super();
@@ -24,7 +24,7 @@ export class RemoveItemEffect extends Effect {
   }
 }
 
-export class ModifyStatEffect extends Effect {
+export class ModifyStatEffectSchema extends EffectSchema {
   @type('string') stat: Stat;
   @type('number') amount: number;
   constructor() {

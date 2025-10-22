@@ -1,7 +1,7 @@
 import { ArraySchema, MapSchema } from '@colyseus/schema';
 
 import { Stats } from '../../types';
-import { Player } from '../player';
+import { PlayerSchema } from '../player-schema';
 
 import { ItemJSON, jsonArrayToItems, itemsToJSONArray } from './item-mapper';
 
@@ -17,8 +17,8 @@ export interface PlayerJSON {
   xp: number;
 }
 
-export function jsonToPlayer(json: PlayerJSON): Player {
-  const p = new Player();
+export function jsonToPlayer(json: PlayerJSON): PlayerSchema {
+  const p = new PlayerSchema();
   p.name = json.name ?? '';
   p.currentChapter = json.currentChapter ?? '';
   p.currentScene = String(json.currentScene);
@@ -39,15 +39,15 @@ export function jsonToPlayer(json: PlayerJSON): Player {
 
 export function jsonArrayToPlayers(
   arr?: PlayerJSON[] | null
-): ArraySchema<Player> {
-  const out = new ArraySchema<Player>();
+): ArraySchema<PlayerSchema> {
+  const out = new ArraySchema<PlayerSchema>();
   if (!Array.isArray(arr)) return out;
   for (const j of arr) out.push(jsonToPlayer(j));
   return out;
 }
 
 // --- reverse mappings: Player (Colyseus) -> JSON ---
-export function playerToJSON(player: Player): PlayerJSON {
+export function playerToJSON(player: PlayerSchema): PlayerJSON {
   const statsObj = Object.fromEntries(player.stats) as Stats;
 
   return {
@@ -71,7 +71,7 @@ export function playerToJSON(player: Player): PlayerJSON {
 }
 
 export function playersToJSONArray(
-  arr?: ArraySchema<Player> | null
+  arr?: ArraySchema<PlayerSchema> | null
 ): PlayerJSON[] {
   if (!arr) return [];
   const out: PlayerJSON[] = [];

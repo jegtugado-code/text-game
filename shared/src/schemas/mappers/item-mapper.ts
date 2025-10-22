@@ -1,7 +1,7 @@
 import { ArraySchema } from '@colyseus/schema';
 
 import { ItemType } from '../../types';
-import { Item } from '../item';
+import { ItemSchema } from '../item-schema';
 
 import {
   EffectJSON,
@@ -17,8 +17,8 @@ export interface ItemJSON {
   effects?: EffectJSON[] | null;
 }
 
-export function jsonToItem(json: ItemJSON): Item {
-  const it = new Item();
+export function jsonToItem(json: ItemJSON): ItemSchema {
+  const it = new ItemSchema();
   it.id = json.id ?? '';
   it.name = json.name ?? '';
   it.description = json.description ?? '';
@@ -28,14 +28,16 @@ export function jsonToItem(json: ItemJSON): Item {
   return it;
 }
 
-export function jsonArrayToItems(arr?: ItemJSON[] | null): ArraySchema<Item> {
-  const out = new ArraySchema<Item>();
+export function jsonArrayToItems(
+  arr?: ItemJSON[] | null
+): ArraySchema<ItemSchema> {
+  const out = new ArraySchema<ItemSchema>();
   if (!Array.isArray(arr)) return out;
   for (const j of arr) out.push(jsonToItem(j));
   return out;
 }
 
-export function itemToJSON(item: Item): ItemJSON {
+export function itemToJSON(item: ItemSchema): ItemJSON {
   return {
     id: item.id,
     name: item.name || undefined,
@@ -45,7 +47,9 @@ export function itemToJSON(item: Item): ItemJSON {
   };
 }
 
-export function itemsToJSONArray(arr?: ArraySchema<Item> | null): ItemJSON[] {
+export function itemsToJSONArray(
+  arr?: ArraySchema<ItemSchema> | null
+): ItemJSON[] {
   if (!arr) return [];
   const out: ItemJSON[] = [];
   for (const i of arr) out.push(itemToJSON(i));
