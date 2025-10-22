@@ -1,0 +1,189 @@
+{
+  "id": "intro",
+  "name": "Introduction to Emberfall",
+  "description": "Begin your journey in the world of Emberfall. Learn the basics of navigation, interaction, and choice-making as you explore the ancient ruins and mystical landscapes.",
+  "location": "Emberfall Outskirts",
+  "scenes": {
+    "start": {
+      "id": "start",
+      "title": "Adventurer’s Guild Registration",
+      "description": "You step up to the registration counter. A friendly clerk smiles and asks to record your details. This will just take a moment.",
+      "choices": [
+        {
+          "id": "begin_registration",
+          "label": "Begin registration.",
+          "nextScene": "enter_name"
+        },
+        {
+          "id": "ask_for_more_time",
+          "label": "I need a moment.",
+          "nextScene": "pause_scene"
+        }
+      ],
+      "effects": [],
+      "conditions": []
+    },
+
+    "pause_scene": {
+      "id": "pause_scene",
+      "title": "Take a Breath",
+      "description": "You take a moment to gather yourself. When you're ready, the clerk will be waiting.",
+      "choices": [
+        {
+          "id": "ready_now",
+          "label": "I'm ready now.",
+          "nextScene": "enter_name"
+        }
+      ],
+      "effects": [],
+      "conditions": []
+    },
+
+    "enter_name": {
+      "id": "enter_name",
+      "title": "What is your name?",
+      "description": "Please enter the name you'd like to be known by.",
+      "inputPrompt": "Enter your name",
+      "inputNextScene": "ask_gender",
+      "choices": [],
+      "effects": [],
+      "conditions": []
+    },
+
+    "ask_gender": {
+      "id": "ask_gender",
+      "title": "A Few Details",
+      "description": "The clerk notes your name and asks if you'd like to share your gender. This helps personalize records but is optional.",
+      "choices": [
+        {
+          "id": "gender_male",
+          "label": "Male",
+          "nextScene": "guild_explanation"
+        },
+        {
+          "id": "gender_female",
+          "label": "Female",
+          "nextScene": "guild_explanation"
+        },
+        {
+          "id": "gender_na",
+          "label": "Prefer not to say",
+          "nextScene": "guild_explanation"
+        }
+      ],
+      "effects": [],
+      "conditions": []
+    },
+
+    "welcome_scene": {
+      "id": "welcome_scene",
+      "title": "Welcome Aboard",
+      "description": "The clerk smiles and finishes the paperwork. 'Welcome to the guild. Your journey begins now. Remember: be kind, be curious, and learn as you go.'",
+      "choices": [
+        { "id": "finish", "label": "Thank you.", "nextScene": "end" }
+      ],
+      "effects": [],
+      "conditions": []
+    },
+
+    "guild_explanation": {
+      "id": "guild_explanation",
+      "title": "How the Guild Works",
+      "description": "The clerk explains: 'The Adventurer's Guild matches people to tasks that suit their experience. As you gain experience you'll face tougher challenges.'",
+      "choices": [
+        {
+          "id": "ask_about_rank",
+          "label": "Tell me about ranks.",
+          "nextScene": "explain_rank"
+        },
+        {
+          "id": "ok_continue",
+          "label": "That's fine, continue.",
+          "nextScene": "explain_rank"
+        }
+      ],
+      "effects": [],
+      "conditions": []
+    },
+
+    "explain_rank": {
+      "id": "explain_rank",
+      "title": "Ranks and Growth",
+      "description": "'New members begin as F-Rank. With time, practice, and successful tasks you may rise in rank. Higher rank brings greater responsibility and reward.'",
+      "choices": [
+        {
+          "id": "sounds_good",
+          "label": "Sounds good.",
+          "nextScene": "receive_guild_badge"
+        },
+        {
+          "id": "i_might_be_nervous",
+          "label": "I'm a bit nervous.",
+          "nextScene": "hesitation_scene"
+        }
+      ],
+      "effects": [],
+      "conditions": []
+    },
+
+    "hesitation_scene": {
+      "id": "hesitation_scene",
+      "title": "A Moment of Doubt",
+      "description": "The clerk offers reassurance: 'It's normal to be nervous. Start small, learn, and you'll grow more confident.'",
+      "choices": [
+        {
+          "id": "continue_anyway",
+          "label": "I'll continue.",
+          "nextScene": "receive_guild_badge"
+        },
+        {
+          "id": "ask_training_options",
+          "label": "How can I train safely?",
+          "nextScene": "training_grounds_info"
+        }
+      ],
+      "effects": [],
+      "conditions": []
+    },
+
+    "training_grounds_info": {
+      "id": "training_grounds_info",
+      "title": "Training Options",
+      "description": "'We offer practice areas and instructors where new members can learn basic skills. Take your time to prepare.'",
+      "choices": [
+        {
+          "id": "thanks_and_continue",
+          "label": "Thanks, continue.",
+          "nextScene": "receive_guild_badge"
+        }
+      ],
+      "effects": [],
+      "conditions": []
+    },
+
+    "receive_guild_badge": {
+      "id": "receive_guild_badge",
+      "title": "Your Registration",
+      "description": "The clerk completes the registration. 'You're officially registered. Keep your information safe and return if you need help.'",
+      "choices": [
+        {
+          "id": "ok_thanks",
+          "label": "Thank you.",
+          "nextScene": "welcome_scene"
+        }
+      ],
+      "effects": [],
+      "conditions": []
+    },
+
+    "end": {
+      "id": "end",
+      "title": "Registration Complete",
+      "description": "You're now registered. When you're ready, speak to the clerk to continue your adventure.",
+      "choices": [],
+      "effects": [],
+      "conditions": [],
+      "isEnding": true
+    }
+  }
+}

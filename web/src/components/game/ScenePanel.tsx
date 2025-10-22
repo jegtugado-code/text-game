@@ -38,7 +38,7 @@ export const ScenePanel: React.FC<Props> = ({
         {!isTitleStreaming && (
           <GameText
             enableStreaming
-            text={scene.text}
+            text={scene.description}
             className="whitespace-pre-wrap break-words leading-relaxed"
             onStreamingChange={setIsTextStreaming}
           />

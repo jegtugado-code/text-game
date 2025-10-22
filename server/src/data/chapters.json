@@ -1,0 +1,14 @@
+{
+  "intro": {
+    "id": "intro",
+    "title": "Echoes of Emberfall",
+    "description": "Welcome to Emberfall — a world of ancient ruins, shifting alliances, and forgotten magic. This introductory chapter walks new adventurers through the game systems: navigating scenes, making choices, inspecting items, and how effects and conditions work. Take your time; the choices you make here will prepare you for the road ahead.",
+    "quests": ["intro"]
+  },
+  "default": {
+    "id": "default",
+    "title": "Guildside — Emberfall Guildhall",
+    "description": "You stand in the warm, bustling heart of the Emberfall Guildhall. This is your home base: accept quests, manage your inventory, rest, and speak with guild NPCs. Use the UI to access your journal, equipment, and the world map. When you're ready, set out on an adventure — the guild doors are always open.",
+    "quests": ["guild"]
+  }
+}
