@@ -4,7 +4,8 @@ import { ItemSchema } from './item-schema';
 
 export class PlayerSchema extends Schema {
   @type('string') name = '';
-  @type('string') currentChapter = 'intro'; // current scene ID
+  @type('string') currentChapter = 'intro'; // current chapter ID
+  @type('string') currentQuest = 'intro'; // current quest ID
   @type('string') currentScene = 'start'; // current scene ID
   @type(['string']) visitedScenes = new ArraySchema<string>(); // history of chosen scene IDs
   @type(['string']) choicesMade = new ArraySchema<string>(); // history of chosen choice IDs

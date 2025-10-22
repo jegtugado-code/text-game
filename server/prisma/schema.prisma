@@ -27,7 +27,8 @@ model Player {
   userId String @unique @db.Uuid
 
   name           String? // optional display name
-  currentChapter String // chapter id string
+  currentChapter String  @default("intro") // chapter id string
+  currentQuest   String  @default("intro") // quest id string
   currentScene   String // scene id string (dynamic scenes supported)
   visitedScenes  Json    @default("[]") // array of scene ids (JSON)
   choicesMade    Json    @default("[]") // array of choice ids or scene ids if you prefer

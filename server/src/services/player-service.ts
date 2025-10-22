@@ -29,6 +29,7 @@ export default class PlayerService implements IPlayerService {
         user: { connect: { id: userId } },
         name: null,
         currentChapter: 'intro',
+        currentQuest: 'intro',
         currentScene: 'start',
         visitedScenes: [],
         choicesMade: [],

@@ -5,6 +5,7 @@ import { ItemModel } from './item-model';
 export interface PlayerModel {
   name?: string;
   currentChapter: string;
+  currentQuest: string;
   currentScene: string;
   visitedScenes: string[];
   choicesMade: string[];

@@ -2,7 +2,6 @@ import { ArraySchema } from '@colyseus/schema';
 
 import { ItemModel } from '../models';
 import { ItemSchema } from '../schemas/item-schema';
-import { ItemType } from '../types';
 
 import {
   modelArrayToEffectSchemas,
@@ -11,11 +10,10 @@ import {
 
 export function modelToItemSchema(model: ItemModel): ItemSchema {
   const it = new ItemSchema();
-  it.id = model.id ?? '';
-  it.name = model.name ?? '';
-  it.description = model.description ?? '';
-  it.type =
-    typeof model.type === 'string' ? (model.type as ItemType) : 'functional';
+  it.id = model.id;
+  it.name = model.name;
+  it.description = model.description;
+  it.type = model.type;
   it.effects = modelArrayToEffectSchemas(model.effects ?? undefined);
   return it;
 }
@@ -32,9 +30,9 @@ export function modelArrayToItemSchemas(
 export function itemSchemaToModel(item: ItemSchema): ItemModel {
   return {
     id: item.id,
-    name: item.name || undefined,
-    description: item.description || undefined,
-    type: item.type || undefined,
+    name: item.name,
+    description: item.description,
+    type: item.type,
     effects: effectSchemasToModels(item.effects),
   };
 }
