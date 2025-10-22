@@ -1,4 +1,4 @@
-import { EffectJSON } from '../schemas';
+import { EffectModel } from '../models';
 
 import { Condition } from './condition';
 
@@ -7,5 +7,5 @@ export interface Choice {
   label: string; // Text shown on the button
   nextScene: string; // Scene key this choice leads to
   conditions?: Condition[]; // Optional: only show if condition met
-  effects?: EffectJSON[];
+  effects?: EffectModel[];
 }

@@ -1,4 +1,4 @@
-import { GameState, type Scene } from '@text-game/shared'; // your scene type interface
+import { GameState, type SceneModel } from '@text-game/shared'; // your scene type interface
 import * as Colyseus from 'colyseus.js';
 import { useEffect, useState } from 'react';
 
@@ -9,7 +9,7 @@ const client = new Colyseus.Client(import.meta.env.VITE_GAME_WS_URL as string); 
 export function useGameRoom() {
   const { token } = useAuth();
   const [room, setRoom] = useState<Colyseus.Room<GameState> | null>(null);
-  const [scene, setScene] = useState<Scene | null>(null);
+  const [scene, setScene] = useState<SceneModel | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isJoining, setIsJoining] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
@@ -29,7 +29,7 @@ export function useGameRoom() {
       setIsConnected(true);
 
       // Listen for scene updates
-      gameRoom.onMessage('scene', (sceneData: Scene) => {
+      gameRoom.onMessage('scene', (sceneData: SceneModel) => {
         setScene(sceneData);
         setError(null);
       });

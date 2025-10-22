@@ -6,8 +6,16 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    "import": "./dist/index.js",
-    "default": "./dist/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./mappers": {
+      "types": "./dist/mappers/index.d.ts",
+      "import": "./dist/mappers/index.js",
+      "default": "./dist/mappers/index.js"
+    }
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

@@ -1,8 +1,8 @@
-import type { PlayerJSON } from '@text-game/shared';
+import type { PlayerModel } from '@text-game/shared';
 import React from 'react';
 
 interface Props {
-  player: PlayerJSON | null;
+  player: PlayerModel | null;
 }
 
 export const PlayerInfoCard: React.FC<Props> = ({ player }) => {

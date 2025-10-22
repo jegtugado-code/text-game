@@ -1,23 +1,12 @@
 import { ArraySchema, MapSchema } from '@colyseus/schema';
 
-import { Stats } from '../../types';
-import { PlayerSchema } from '../player-schema';
+import { PlayerModel } from '../models';
+import { PlayerSchema } from '../schemas/player-schema';
+import { Stats } from '../types';
 
-import { ItemJSON, jsonArrayToItems, itemsToJSONArray } from './item-mapper';
+import { modelArrayToItemSchemas, itemSchemasToModels } from './item-mapper';
 
-export interface PlayerJSON {
-  name?: string;
-  currentChapter?: string | null;
-  currentScene?: string | null;
-  visitedScenes: string[];
-  choicesMade: string[];
-  inventory: ItemJSON[];
-  stats: Stats;
-  level: number;
-  xp: number;
-}
-
-export function jsonToPlayer(json: PlayerJSON): PlayerSchema {
+export function modelToPlayerSchema(json: PlayerModel): PlayerSchema {
   const p = new PlayerSchema();
   p.name = json.name ?? '';
   p.currentChapter = json.currentChapter ?? '';
@@ -27,7 +16,7 @@ export function jsonToPlayer(json: PlayerJSON): PlayerSchema {
   p.choicesMade = new ArraySchema<string>();
   if (Array.isArray(json.choicesMade))
     for (const c of json.choicesMade) p.choicesMade.push(c);
-  p.inventory = jsonArrayToItems(json.inventory ?? undefined);
+  p.inventory = modelArrayToItemSchemas(json.inventory ?? undefined);
   p.stats = new MapSchema<number>();
   if (json.stats && typeof json.stats === 'object') {
     for (const [k, v] of Object.entries(json.stats)) p.stats.set(k, Number(v));
@@ -37,26 +26,26 @@ export function jsonToPlayer(json: PlayerJSON): PlayerSchema {
   return p;
 }
 
-export function jsonArrayToPlayers(
-  arr?: PlayerJSON[] | null
+export function modelArrayToPlayerSchemas(
+  arr?: PlayerModel[] | null
 ): ArraySchema<PlayerSchema> {
   const out = new ArraySchema<PlayerSchema>();
   if (!Array.isArray(arr)) return out;
-  for (const j of arr) out.push(jsonToPlayer(j));
+  for (const j of arr) out.push(modelToPlayerSchema(j));
   return out;
 }
 
 // --- reverse mappings: Player (Colyseus) -> JSON ---
-export function playerToJSON(player: PlayerSchema): PlayerJSON {
+export function playerSchemaToModel(player: PlayerSchema): PlayerModel {
   const statsObj = Object.fromEntries(player.stats) as Stats;
 
   return {
     name: player.name || undefined,
-    currentChapter: player.currentChapter || undefined,
-    currentScene: player.currentScene || undefined,
+    currentChapter: player.currentChapter,
+    currentScene: player.currentScene,
     visitedScenes: player.visitedScenes.toArray(),
     choicesMade: player.choicesMade.toArray(),
-    inventory: itemsToJSONArray(player.inventory),
+    inventory: itemSchemasToModels(player.inventory),
     stats: statsObj ?? {
       health: 100,
       strength: 5,
@@ -70,11 +59,11 @@ export function playerToJSON(player: PlayerSchema): PlayerJSON {
   };
 }
 
-export function playersToJSONArray(
+export function playerSchemasToModels(
   arr?: ArraySchema<PlayerSchema> | null
-): PlayerJSON[] {
+): PlayerModel[] {
   if (!arr) return [];
-  const out: PlayerJSON[] = [];
-  for (const p of arr) out.push(playerToJSON(p));
+  const out: PlayerModel[] = [];
+  for (const p of arr) out.push(playerSchemaToModel(p));
   return out;
 }

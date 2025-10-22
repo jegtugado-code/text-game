@@ -1,25 +1,21 @@
 import {
-  AddItemEffectSchema,
-  EffectSchema,
+  EffectModel,
   GameState,
-  ModifyStatEffectSchema,
-  PlayerSchema,
-  RemoveItemEffectSchema,
-  Scene,
-  ItemJSON,
-  jsonToItem,
-  jsonToPlayer,
-  playerToJSON,
-  jsonToEffect,
+  PlayerModel,
+  SceneModel,
+  ItemModel,
 } from '@text-game/shared';
+import {
+  modelToPlayerSchema,
+  playerSchemaToModel,
+} from '@text-game/shared/mappers';
 import { Room, Client, ServerError } from 'colyseus';
 
 import sceneData from '../../data/intro-scene-data.json';
 import itemData from '../../data/items.json';
-// import sceneData from '../../data/test-scene-data.json';
 import { IPlayerService } from '../../services/player-service';
 import type { ITokenService, JwtPayload } from '../../services/token-service';
-import { dbPlayerToJSON } from '../mappers/db-player-mapper';
+import { dbPlayerToModel } from '../mappers/db-player-mapper';
 
 interface ChoiceMessage {
   choiceId: string; // id of the choice selected
@@ -29,8 +25,8 @@ interface InputMessage {
   value: string;
 }
 
-const scenes = sceneData as Record<string, Scene>;
-const items = itemData as ItemJSON[];
+const scenes = sceneData as Record<string, SceneModel>;
+const items = itemData as ItemModel[];
 
 enum FixedSceneKeys {
   Start = 'start',
@@ -90,7 +86,8 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
     this.onMessage<ChoiceMessage>('choice', (client: Client, message) => {
       const player = this.state.player;
       if (!player) return;
-      const currentScene = { ...scenes[player.currentScene] };
+      const model = playerSchemaToModel(player);
+      const currentScene = { ...scenes[model.currentScene] };
       // Basic validation
       const choiceId = message.choiceId;
       if (!choiceId) {
@@ -109,33 +106,31 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
 
       // Apply any effects based on the chosen choice
       if (chosen.effects) {
-        chosen.effects.forEach(effect =>
-          applyEffect(player, jsonToEffect(effect))
-        );
+        chosen.effects.forEach(effect => applyEffect(model, effect));
       }
 
       // Evaluate player health (after applying choice effects)
-      const playerHealth = player.stats.get('health');
+      const playerHealth = model.stats.health;
       if (playerHealth && playerHealth <= 0) {
+        const model = playerSchemaToModel(player);
         // send death scene
         const next = prepareSceneForPlayer(
-          player,
+          model,
           FixedSceneKeys.Death,
           chosen.id
         );
         client.send('scene', next);
-        const json = playerToJSON(player);
-        void this.playerService.savePlayerState(this.metadata.userId, json);
+        void this.playerService.savePlayerState(this.metadata.userId, model);
         return;
       }
 
       // Advance to the configured next scene
       const targetSceneId = chosen.nextScene;
 
-      const next = prepareSceneForPlayer(player, targetSceneId, chosen.id);
+      const next = prepareSceneForPlayer(model, targetSceneId, chosen.id);
+      this.state.player = modelToPlayerSchema(model);
       client.send('scene', next);
-      const json = playerToJSON(player);
-      void this.playerService.savePlayerState(this.metadata.userId, json);
+      void this.playerService.savePlayerState(this.metadata.userId, model);
     });
 
     // Handle text input from player for scenes that request input
@@ -143,7 +138,8 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
       const player = this.state.player;
       if (!player) return;
 
-      const currentScene = scenes[player.currentScene];
+      const model = playerSchemaToModel(player);
+      const currentScene = scenes[model.currentScene];
       if (!currentScene?.inputNextScene) {
         client.send('error', { message: 'No input expected at this time.' });
         return;
@@ -158,17 +154,17 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
 
       // Example handling: if the current scene is the name input scene, set player name
       // You can expand handling logic based on scene id or effects in the scene.
-      if (player.currentScene === String(FixedSceneKeys.EnterName)) {
-        player.name = value;
+      if (model.currentScene === String(FixedSceneKeys.EnterName)) {
+        model.name = value;
       }
 
       // Advance to the configured next scene
       const targetSceneId = String(currentScene.inputNextScene);
 
-      const next = prepareSceneForPlayer(player, targetSceneId);
+      const next = prepareSceneForPlayer(model, targetSceneId);
+      this.state.player = modelToPlayerSchema(model);
       client.send('scene', next);
-      const json = playerToJSON(player);
-      void this.playerService.savePlayerState(this.metadata.userId, json);
+      void this.playerService.savePlayerState(this.metadata.userId, model);
     });
   }
 
@@ -179,12 +175,12 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
     const dbPlayer = await this.playerService.loadOrCreatePlayerForUser(
       user.sub!
     );
-    const json = dbPlayerToJSON(dbPlayer);
-    const player = jsonToPlayer(json);
+    const model = dbPlayerToModel(dbPlayer);
 
-    console.log(`Loaded player for user ${user.email}:`, player.name);
+    console.log(`Loaded player for user ${user.email}:`, model.name);
 
-    const next = prepareSceneForPlayer(player, player.currentScene);
+    const next = prepareSceneForPlayer(model, model.currentScene);
+    const player = modelToPlayerSchema(model);
     this.state.player = player;
     client.send('scene', next);
   }
@@ -197,8 +193,8 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
     }
 
     const player = this.state.player;
-    const json = playerToJSON(player);
-    await this.playerService.savePlayerState(userId, json);
+    const model = playerSchemaToModel(player);
+    await this.playerService.savePlayerState(userId, model);
   }
 
   onDispose() {
@@ -206,25 +202,18 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
   }
 }
 
-function applyEffect(player: PlayerSchema, effect: EffectSchema) {
-  if (effect instanceof AddItemEffectSchema) {
-    const itemJson = items.find(i => i.id === effect.itemId);
-    if (!itemJson) return;
-    const item = jsonToItem(itemJson);
-    player.inventory.push(item);
-  } else if (effect instanceof RemoveItemEffectSchema) {
-    const itemJson = items.find(i => i.id === effect.itemId);
-    if (!itemJson) return;
-    const item = jsonToItem(itemJson);
-    const index = player.inventory.findIndex(i => i.id === item.id);
+function applyEffect(model: PlayerModel, effect: EffectModel) {
+  if (effect.type === 'addItem') {
+    const item = items.find(i => i.id === effect.itemId);
+    if (!item) return;
+    model.inventory.push(item);
+  } else if (effect.type === 'removeItem') {
+    const index = model.inventory.findIndex(i => i.id === effect.itemId);
     if (index !== -1) {
-      player.inventory.splice(index, 1);
+      model.inventory.splice(index, 1);
     }
-  } else if (effect instanceof ModifyStatEffectSchema) {
-    player.stats.set(
-      effect.stat,
-      (player.stats.get(effect.stat) ?? 0) + effect.amount
-    );
+  } else if (effect.type === 'modifyStat') {
+    model.stats[effect.stat] = (model.stats[effect.stat] || 0) + effect.amount;
   }
 }
 
@@ -234,7 +223,7 @@ function applyEffect(player: PlayerSchema, effect: EffectSchema) {
  * choices according to the player's inventory and previous choices.
  */
 function prepareSceneForPlayer(
-  player: PlayerSchema,
+  playerModel: PlayerModel,
   sceneId: string,
   choiceId?: string
 ) {
@@ -242,11 +231,11 @@ function prepareSceneForPlayer(
   if (!original) return undefined;
 
   // shallow copy of scene (we don't deep-copy text/effects here)
-  const copy: Scene = {
+  const copy: SceneModel = {
     ...original,
     choices: (original.choices ?? []).slice(),
     effects: (original.effects ?? []).slice(),
-  } as Scene;
+  } as SceneModel;
 
   // filter choices based on conditions
   copy.choices = copy.choices.filter(c => {
@@ -254,13 +243,15 @@ function prepareSceneForPlayer(
     return c.conditions.every(_ => {
       switch (_.type) {
         case 'hasItem':
-          return player.inventory.some(item => item.id === _.value);
+          return playerModel.inventory.some(item => item.id === _.value);
         case 'noItem':
-          return player.inventory.findIndex(item => item.id === _.value) === -1;
+          return (
+            playerModel.inventory.findIndex(item => item.id === _.value) === -1
+          );
         case 'choiceMade':
-          return player.choicesMade.includes(_.value);
+          return playerModel.choicesMade.includes(_.value);
         case 'noChoiceMade':
-          return !player.choicesMade.includes(_.value);
+          return !playerModel.choicesMade.includes(_.value);
         default:
           return false;
       }
@@ -268,20 +259,18 @@ function prepareSceneForPlayer(
   });
 
   // apply scene effects immediately
-  if (copy.effects) {
-    copy.effects.forEach(effect => applyEffect(player, jsonToEffect(effect)));
-  }
+  copy.effects?.forEach(effect => applyEffect(playerModel, effect));
 
   if (choiceId) {
-    player.choicesMade.push(choiceId);
+    playerModel.choicesMade.push(choiceId);
   }
   if (
-    player.visitedScenes[player.visitedScenes.length - 1] !==
-    player.currentScene
+    playerModel.visitedScenes[playerModel.visitedScenes.length - 1] !==
+    playerModel.currentScene
   ) {
-    player.visitedScenes.push(player.currentScene);
+    playerModel.visitedScenes.push(playerModel.currentScene);
   }
-  player.currentScene = sceneId;
+  playerModel.currentScene = sceneId;
 
   return copy;
 }

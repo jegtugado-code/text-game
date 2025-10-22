@@ -1,9 +1,10 @@
-import { GameState, playerToJSON, type PlayerJSON } from '@text-game/shared';
+import { GameState, type PlayerModel } from '@text-game/shared';
+import { playerSchemaToModel } from '@text-game/shared/mappers';
 import * as Colyseus from 'colyseus.js';
 import { useEffect, useState } from 'react';
 
 export function usePlayer(room: Colyseus.Room<GameState> | null) {
-  const [player, setPlayer] = useState<PlayerJSON | null>(null);
+  const [player, setPlayer] = useState<PlayerModel | null>(null);
 
   useEffect(() => {
     if (!room) return;
@@ -11,9 +12,9 @@ export function usePlayer(room: Colyseus.Room<GameState> | null) {
     const $ = Colyseus.getStateCallbacks(room);
 
     $(room.state).listen('player', (v, _pv) => {
-      setPlayer(playerToJSON(v));
+      setPlayer(playerSchemaToModel(v));
       $(room.state.player).onChange(() => {
-        setPlayer(playerToJSON(room.state.player));
+        setPlayer(playerSchemaToModel(room.state.player));
       });
     });
   }, [room]);

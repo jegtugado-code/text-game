@@ -1,39 +1,33 @@
 import { ArraySchema } from '@colyseus/schema';
 
-import { EffectType, Stat } from '../../types';
+import { EffectModel } from '../models';
 import {
   EffectSchema,
   AddItemEffectSchema,
   RemoveItemEffectSchema,
   ModifyStatEffectSchema,
-} from '../effect-schema';
+} from '../schemas/effect-schema';
+import { EffectType, Stat } from '../types';
 
-// JSON shapes that come from DB / Prisma / external sources
-export type EffectJSON =
-  | { type: 'addItem'; itemId: string }
-  | { type: 'removeItem'; itemId: string }
-  | { type: 'modifyStat'; stat: Stat; amount: number }
-  | { type: EffectType; [k: string]: unknown };
-
-// Convert EffectJSON -> Colyseus Effect instance
-export function jsonToEffect(json: EffectJSON): EffectSchema {
-  switch (json.type) {
+// Convert EffectModel -> Colyseus Effect instance
+export function modelToEffectSchema(model: EffectModel): EffectSchema {
+  switch (model.type) {
     case 'addItem': {
       const e = new AddItemEffectSchema();
-      const itemId = (json as { itemId?: unknown }).itemId;
+      const itemId = (model as { itemId?: unknown }).itemId;
       e.itemId = typeof itemId === 'string' ? itemId : '';
       return e;
     }
     case 'removeItem': {
       const e = new RemoveItemEffectSchema();
-      const itemId = (json as { itemId?: unknown }).itemId;
+      const itemId = (model as { itemId?: unknown }).itemId;
       e.itemId = typeof itemId === 'string' ? itemId : '';
       return e;
     }
     case 'modifyStat': {
       const e = new ModifyStatEffectSchema();
-      const stat = (json as { stat?: unknown }).stat;
-      const amount = (json as { amount?: unknown }).amount;
+      const stat = (model as { stat?: unknown }).stat;
+      const amount = (model as { amount?: unknown }).amount;
       e.stat = typeof stat === 'string' ? (stat as Stat) : 'health';
       e.amount = typeof amount === 'number' ? amount : Number(amount ?? 0);
       return e;
@@ -42,26 +36,26 @@ export function jsonToEffect(json: EffectJSON): EffectSchema {
       // fallback to base Effect with the provided type
       const e = new EffectSchema();
       e.type =
-        typeof (json as { type?: unknown }).type === 'string'
-          ? ((json as { type: unknown }).type as EffectType)
+        typeof (model as { type?: unknown }).type === 'string'
+          ? ((model as { type: unknown }).type as EffectType)
           : 'unset';
       return e;
     }
   }
 }
 
-// Convert array of JSON effects -> ArraySchema<Effect>
-export function jsonArrayToEffects(
-  arr?: EffectJSON[]
+// Convert array of Model effects -> ArraySchema<Effect>
+export function modelArrayToEffectSchemas(
+  arr?: EffectModel[]
 ): ArraySchema<EffectSchema> {
   const out = new ArraySchema<EffectSchema>();
   if (!Array.isArray(arr)) return out;
-  for (const j of arr) out.push(jsonToEffect(j));
+  for (const j of arr) out.push(modelToEffectSchema(j));
   return out;
 }
 
-// --- reverse mappings: Colyseus Effect -> JSON ---
-export function effectToJSON(effect: EffectSchema): EffectJSON {
+// --- reverse mappings: Colyseus Effect -> Model ---
+export function effectSchemaToModel(effect: EffectSchema): EffectModel {
   switch (effect.type) {
     case 'addItem':
       return {
@@ -80,15 +74,15 @@ export function effectToJSON(effect: EffectSchema): EffectJSON {
         amount: (effect as ModifyStatEffectSchema).amount,
       };
     default:
-      return { type: effect.type as EffectType };
+      return { type: 'unset' };
   }
 }
 
-export function effectsToJSONArray(
+export function effectSchemasToModels(
   arr?: ArraySchema<EffectSchema> | null
-): EffectJSON[] {
+): EffectModel[] {
   if (!arr) return [];
-  const out: EffectJSON[] = [];
-  for (const e of arr) out.push(effectToJSON(e));
+  const out: EffectModel[] = [];
+  for (const e of arr) out.push(effectSchemaToModel(e));
   return out;
 }

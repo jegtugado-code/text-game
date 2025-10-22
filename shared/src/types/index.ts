@@ -1,4 +1,4 @@
-export * from './scene';
+export * from '../models/scene-model';
 export * from './choice';
 export * from './condition';
 export * from './effect-type';

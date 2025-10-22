@@ -1,11 +1,11 @@
-import type { PlayerJSON, Scene } from '@text-game/shared';
+import type { PlayerModel, SceneModel } from '@text-game/shared';
 import React, { useState } from 'react';
 
 import { GameText } from '../GameText';
 
 interface Props {
-  player: PlayerJSON | null;
-  scene: Scene;
+  player: PlayerModel | null;
+  scene: SceneModel;
   onChoose: (choiceId: string) => void;
   onSubmitInput: (value: string) => void;
 }
