@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
+import { useKeyPress } from '../hooks/use-key-press';
+
 interface Props {
   text: string;
   className?: string;
@@ -26,6 +28,14 @@ export const GameText: React.FC<Props> = ({
   const [isStreaming, setIsStreaming] = useState(false);
   const indexRef = useRef(0);
   const timerRef = useRef<number | null>(null);
+  useKeyPress({
+    key: 'Enter',
+    onPress: () => {
+      if (isStreaming) {
+        revealAll();
+      }
+    },
+  });
 
   useEffect(() => {
     // handle non-streaming mode: reveal all immediately
