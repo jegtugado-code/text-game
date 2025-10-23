@@ -3,7 +3,7 @@ import { ItemModel, PlayerModel, Stats } from '@text-game/shared';
 
 export function dbPlayerToModel(dbPlayer: DbPlayer): PlayerModel {
   return {
-    name: dbPlayer.name ?? undefined,
+    name: dbPlayer.name ?? '',
     level: dbPlayer.level,
     xp: dbPlayer.xp,
     currentChapter: dbPlayer.currentChapter,

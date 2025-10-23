@@ -8,7 +8,7 @@ import { modelArrayToItemSchemas, itemSchemasToModels } from './item-mapper';
 
 export function modelToPlayerSchema(json: PlayerModel): PlayerSchema {
   const p = new PlayerSchema();
-  p.name = String(json.name);
+  p.name = json.name ?? '';
   p.currentQuest = json.currentQuest;
   p.currentChapter = json.currentChapter;
   p.currentScene = String(json.currentScene);
@@ -17,7 +17,7 @@ export function modelToPlayerSchema(json: PlayerModel): PlayerSchema {
   p.choicesMade = new ArraySchema<string>();
   if (Array.isArray(json.choicesMade))
     for (const c of json.choicesMade) p.choicesMade.push(c);
-  p.inventory = modelArrayToItemSchemas(json.inventory ?? undefined);
+  p.inventory = modelArrayToItemSchemas(json.inventory);
   p.stats = new MapSchema<number>();
   if (json.stats && typeof json.stats === 'object') {
     for (const [k, v] of Object.entries(json.stats)) p.stats.set(k, Number(v));
@@ -41,7 +41,7 @@ export function playerSchemaToModel(player: PlayerSchema): PlayerModel {
   const statsObj = Object.fromEntries(player.stats) as Stats;
 
   return {
-    name: player.name || undefined,
+    name: player.name,
     currentChapter: player.currentChapter,
     currentQuest: player.currentQuest,
     currentScene: player.currentScene,

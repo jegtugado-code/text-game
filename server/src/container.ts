@@ -1,8 +1,16 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { asValue, createContainer, InjectionMode, Lifetime } from 'awilix';
+import {
+  asClass,
+  asValue,
+  createContainer,
+  InjectionMode,
+  Lifetime,
+} from 'awilix';
 
+import gameSystem from './core/game-system';
+import narrativeSystem from './core/narrative-system';
 import { prisma } from './db/prisma';
 import { EnvConfig } from './env-config';
 
@@ -29,6 +37,9 @@ container.register({
   prisma: asValue(prisma),
   // Register the environment configuration as a singleton value
   envConfig: asValue(EnvConfig),
+  // Game Systems
+  gameSystem: asClass(gameSystem).scoped(),
+  narrativeSystem: asClass(narrativeSystem).scoped(),
 });
 
 export default container;

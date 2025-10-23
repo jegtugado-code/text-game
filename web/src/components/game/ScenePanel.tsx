@@ -32,7 +32,7 @@ export const ScenePanel: React.FC<Props> = ({
             onStreamingChange={setIsTitleStreaming}
           />
           <span className="badge badge-primary self-center">
-            {player?.choicesMade.length ? player.choicesMade.length - 1 : 0}
+            {player?.choicesMade?.length ?? 0}
           </span>
         </div>
         {!isTitleStreaming && (
