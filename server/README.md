@@ -27,3 +27,11 @@ After making changes to your schema.prisma file and running npx prisma migrate d
 ```sh
 pnpm dlx prisma generate
 ```
+
+### Reset DB
+
+You can run the command below to reset the database. This is useful when there are issues with the migrations.
+
+```sh
+pnpm dlx prisma migrate reset
+```
