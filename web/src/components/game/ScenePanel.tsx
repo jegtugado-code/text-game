@@ -8,6 +8,7 @@ interface Props {
   scene: SceneModel;
   onChoose: (choiceId: string) => void;
   onSubmitInput: (value: string) => void;
+  onContinue: () => void;
 }
 
 export const ScenePanel: React.FC<Props> = ({
@@ -45,57 +46,64 @@ export const ScenePanel: React.FC<Props> = ({
         )}
 
         {scene.isEnding && (
-          <div className="mt-4">
-            <div className="alert alert-success text-center">
-              <span className="text-xl font-bold">Adventure Complete!</span>
+          <>
+            <div className="mt-4">
+              <div className="alert alert-success text-center">
+                <span className="text-xl font-bold">Rewards</span>
+              </div>
             </div>
-          </div>
+            <div className="flex justify-end mt-4">
+              <button className="btn btn-primary">Continue</button>
+            </div>
+          </>
         )}
 
-        <div className="card-actions mt-4 flex flex-wrap gap-2">
-          {scene.inputPrompt && (
-            <div className="w-full flex gap-2 items-center">
-              <input
-                aria-label="scene-input"
-                placeholder={String(scene.inputPrompt ?? '')}
-                value={inputValue}
-                onChange={e => setInputValue(e.target.value)}
-                className="input input-bordered flex-1"
-                disabled={isStreaming}
-              />
+        {!scene.isEnding && (
+          <div className="card-actions mt-4 flex flex-wrap gap-2">
+            {scene.inputPrompt && (
+              <div className="w-full flex gap-2 items-center">
+                <input
+                  aria-label="scene-input"
+                  placeholder={String(scene.inputPrompt ?? '')}
+                  value={inputValue}
+                  onChange={e => setInputValue(e.target.value)}
+                  className="input input-bordered flex-1"
+                  disabled={isStreaming}
+                />
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    const v = inputValue.trim();
+                    if (!v) return;
+                    onSubmitInput(v);
+                    setInputValue('');
+                  }}
+                  disabled={isStreaming || inputValue.trim().length === 0}
+                >
+                  Submit
+                </button>
+              </div>
+            )}
+            {scene.choices.map(choice => (
               <button
-                className="btn btn-primary"
+                key={String(choice.id)}
                 onClick={() => {
-                  const v = inputValue.trim();
-                  if (!v) return;
-                  onSubmitInput(v);
-                  setInputValue('');
+                  if (!choice.id) {
+                    // Do not allow selecting choices without stable ids.
+                    // Keep a visible warning in the console to help debug missing ids.
+                    console.warn('Choice missing id, cannot select:', choice);
+                    return;
+                  }
+                  onChoose(String(choice.id));
                 }}
-                disabled={isStreaming || inputValue.trim().length === 0}
+                className="btn btn-secondary"
+                disabled={isStreaming || !choice.id}
               >
-                Submit
+                {choice.label}
               </button>
-            </div>
-          )}
-          {scene.choices.map(choice => (
-            <button
-              key={String(choice.id)}
-              onClick={() => {
-                if (!choice.id) {
-                  // Do not allow selecting choices without stable ids.
-                  // Keep a visible warning in the console to help debug missing ids.
-                  console.warn('Choice missing id, cannot select:', choice);
-                  return;
-                }
-                onChoose(String(choice.id));
-              }}
-              className="btn btn-secondary"
-              disabled={isStreaming || !choice.id}
-            >
-              {choice.label}
-            </button>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

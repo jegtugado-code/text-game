@@ -58,6 +58,12 @@ export function useGameRoom() {
     room.send('input', { value });
   }
 
+  function continuePlaying() {
+    if (!room) return;
+    console.log('continuuuuue')
+    room.send('continue');
+  }
+
   useEffect(() => {
     return () => {
       room?.leave().catch(e => console.log(e));
@@ -68,6 +74,7 @@ export function useGameRoom() {
     joinGame,
     makeChoice,
     sendInput,
+    continuePlaying,
     room,
     scene,
     error,

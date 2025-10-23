@@ -69,29 +69,52 @@ export class GameRoom extends Room<GameState, GameRoomMetadata> {
 
     // Handle player making a choice
     this.onMessage<ChoiceMessage>('choice', (client: Client, { choiceId }) => {
-      const player = this.state.player;
-      if (!player) return;
+      void (async () => {
+        const player = this.state.player;
+        if (!player) return;
 
-      const model = playerSchemaToModel(player);
-      this.gameSystem.narrativeSystem.choiceMade(model, choiceId);
-      const next = this.gameSystem.narrativeSystem.getCurrentScene(model);
-      this.state.player = modelToPlayerSchema(model);
-      client.send('scene', next);
-      void this.playerService.savePlayerState(this.metadata.userId, model);
+        const model = playerSchemaToModel(player);
+        this.gameSystem.narrativeSystem.choiceMade(model, choiceId);
+        const next = this.gameSystem.narrativeSystem.getCurrentScene(model);
+        this.state.player = modelToPlayerSchema(model);
+        client.send('scene', next);
+        await this.gameSystem.narrativeSystem.checkForEndingScene(model);
+        void this.playerService.savePlayerState(this.metadata.userId, model);
+      })();
     });
 
     // Handle text input from player for scenes that request input
     this.onMessage<InputMessage>('input', (client: Client, { value }) => {
-      const player = this.state.player;
-      if (!player) return;
+      void (async () => {
+        const player = this.state.player;
+        if (!player) return;
 
-      const model = playerSchemaToModel(player);
-      this.gameSystem.narrativeSystem.inputMade(model, value);
-      const next = this.gameSystem.narrativeSystem.getCurrentScene(model);
-      this.state.player = modelToPlayerSchema(model);
-      client.send('scene', next);
-      void this.playerService.savePlayerState(this.metadata.userId, model);
+        const model = playerSchemaToModel(player);
+        this.gameSystem.narrativeSystem.inputMade(model, value);
+        const next = this.gameSystem.narrativeSystem.getCurrentScene(model);
+        this.state.player = modelToPlayerSchema(model);
+        client.send('scene', next);
+        await this.gameSystem.narrativeSystem.checkForEndingScene(model);
+        void this.playerService.savePlayerState(this.metadata.userId, model);
+      })();
     });
+
+    this.onMessage('continue', (client: Client) => {
+      void (async () => {
+        const player = this.state.player;
+        if (!player) return;
+
+        // Load or create player for this user
+        const dbPlayer = await this.playerService.loadOrCreatePlayerForUser(
+          this.metadata.userId
+        );
+
+        const model = dbPlayerToModel(dbPlayer);
+        const next = this.gameSystem.narrativeSystem.getCurrentScene(model);
+        this.state.player = modelToPlayerSchema(model);
+        client.send('scene', next);
+      })();
+    })
   }
 
   async onJoin(client: Client, _options: GameRoomOptions, user: JwtPayload) {

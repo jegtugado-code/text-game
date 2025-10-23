@@ -1,0 +1,304 @@
+{
+  "id": "default",
+  "name": "Emberfall Guildhall",
+  "description": "You are now ready to take on a new adventure. Whether you chat, relax, or take on a quest it's all up to you.",
+  "location": "Emberfall Guildhall",
+  "scenes": {
+    "start": {
+      "id": "start",
+      "title": "Emberfall Guildhall",
+      "description": "You push open the heavy doors and step into the guildhall. Warm lamplight spills across worn wooden tables, a low hum of conversation fills the air, and a notice board stands by the far wall. The clerk at the counter looks up and nods. You can relax for a while, speak with the clerk, eavesdrop on the gossips, or examine the quest board.",
+      "choices": [
+        {
+          "id": "relax",
+          "label": "Take a seat and relax.",
+          "nextScene": "relax_scene"
+        },
+        {
+          "id": "talk_clerk",
+          "label": "Approach the clerk.",
+          "nextScene": "clerk_scene"
+        },
+        {
+          "id": "listen_gossip",
+          "label": "Listen to the gossipers.",
+          "nextScene": "gossip_scene"
+        },
+        {
+          "id": "view_board",
+          "label": "Examine the quest board.",
+          "nextScene": "board_scene"
+        }
+      ],
+      "conditions": []
+    },
+
+    "relax_scene": {
+      "id": "relax_scene",
+      "title": "A Moment's Rest",
+      "description": "You find an empty bench by a glowing brazier. The scent of stew and spiced ale drifts by. For the first time in a while you can breathe. You watch a pair of seasoned adventurers compare maps and a bard tune his lute.",
+      "choices": [
+        {
+          "id": "stretch_legs",
+          "label": "Stretch your legs and loosen up.",
+          "nextScene": "start"
+        },
+        {
+          "id": "strike_conversation",
+          "label": "Strike up a friendly conversation.",
+          "nextScene": "friendly_chat_scene"
+        },
+        {
+          "id": "get_up",
+          "label": "Get up and explore the hall.",
+          "nextScene": "start"
+        }
+      ],
+      "conditions": []
+    },
+
+    "friendly_chat_scene": {
+      "id": "friendly_chat_scene",
+      "title": "Friendly Exchange",
+      "description": "You exchange small talk with a nearby adventurer. They share a tidbit about a local spot and give you a quick tip on dealing with low-level bandits.",
+      "choices": [
+        {
+          "id": "thank_and_return",
+          "label": "Thank them and return to resting.",
+          "nextScene": "relax_scene"
+        },
+        {
+          "id": "ask_more",
+          "label": "Ask for more details about the spot.",
+          "nextScene": "start"
+        }
+      ],
+      "conditions": []
+    },
+
+    "clerk_scene": {
+      "id": "clerk_scene",
+      "title": "At the Clerk's Counter",
+      "description": "The clerk glances at you with a familiar nod. 'Good to see a guild member. How can I help?' they ask. Behind them are shelves of parchment and an ink-stained ledger. You can ask about available services or local rumors.",
+      "choices": [
+        {
+          "id": "ask_services",
+          "label": "Ask about guild services.",
+          "nextScene": "services_info"
+        },
+        {
+          "id": "ask_rumors",
+          "label": "Ask if they've heard anything interesting.",
+          "nextScene": "clerk_rumors"
+        },
+        {
+          "id": "leave_counter",
+          "label": "Step away from the counter.",
+          "nextScene": "start"
+        }
+      ],
+      "conditions": []
+    },
+
+    "services_info": {
+      "id": "services_info",
+      "title": "Guild Services",
+      "description": "The clerk lists services: message relay, training partners, a modest library of field notes, and secure storage for valuables. Many adventurers make use of the training grounds behind the hall.",
+      "choices": [
+        {
+          "id": "ask_training",
+          "label": "Ask about training grounds.",
+          "nextScene": "start"
+        },
+        {
+          "id": "back_to_clerk",
+          "label": "Thank them and step back.",
+          "nextScene": "clerk_scene"
+        }
+      ],
+      "conditions": []
+    },
+
+    "clerk_rumors": {
+      "id": "clerk_rumors",
+      "title": "Quiet Rumors",
+      "description": "The clerk leans in and whispers: 'There've been strange lights near the old mill, and a caravan lost horses not far from the crossroads.' The information might be useful to someone seeking work.'",
+      "choices": [
+        {
+          "id": "thank_clerk",
+          "label": "Thank the clerk.",
+          "nextScene": "clerk_scene"
+        },
+        {
+          "id": "note_rumor",
+          "label": "Make a mental note of the rumors.",
+          "nextScene": "start"
+        }
+      ],
+      "conditions": []
+    },
+
+    "gossip_scene": {
+      "id": "gossip_scene",
+      "title": "Heard and Unheard",
+      "description": "A cluster of patrons trade stories at a nearby table. You catch fragments: a missing merchant's ledger, a celebrated hunt, and a bar fight that ended with a coin gone missing. Voices drop when they notice you listening.",
+      "choices": [
+        {
+          "id": "approach_table",
+          "label": "Approach and join the conversation.",
+          "nextScene": "join_gossip"
+        },
+        {
+          "id": "stay_put",
+          "label": "Stay and eavesdrop a little longer.",
+          "nextScene": "gossip_listen_more"
+        },
+        {
+          "id": "move_on",
+          "label": "Move away and look elsewhere.",
+          "nextScene": "start"
+        }
+      ],
+      "conditions": []
+    },
+
+    "join_gossip": {
+      "id": "join_gossip",
+      "title": "Joining In",
+      "description": "You share a joke and are welcomed. An old hunter mentions a hidden copse where strange tracks were found. It's small talk, but these leads sometimes lead to coin.",
+      "choices": [
+        {
+          "id": "ask_about_copse",
+          "label": "Ask for details about the copse.",
+          "nextScene": "start"
+        },
+        {
+          "id": "thank_and_leave",
+          "label": "Thank them and leave.",
+          "nextScene": "start"
+        }
+      ],
+      "conditions": []
+    },
+
+    "gossip_listen_more": {
+      "id": "gossip_listen_more",
+      "title": "Bits of Truth",
+      "description": "You pick up a few useful details: a color described as 'ashen', a time 'two nights ago', and a place 'west of the crossroads'. These scraps might be worth noting.",
+      "choices": [
+        {
+          "id": "jot_note",
+          "label": "Jot down the details.",
+          "nextScene": "start"
+        },
+        { "id": "ignore", "label": "Ignore and move on.", "nextScene": "start" }
+      ],
+      "conditions": []
+    },
+
+    "board_scene": {
+      "id": "board_scene",
+      "title": "The Quest Board",
+      "description": "Pinned to the board are several notices: a request for escorting merchants, a call to clear a small den of vermin, and a hand-drawn map with a location marked 'old mill'. Rewards are modest, but honest work keeps the lights on.",
+      "choices": [
+        {
+          "id": "read_escort",
+          "label": "Read the escort notice.",
+          "nextScene": "escort_offer"
+        },
+        {
+          "id": "read_vermin",
+          "label": "Inspect the vermin clearing job.",
+          "nextScene": "vermin_offer"
+        },
+        {
+          "id": "inspect_map",
+          "label": "Study the map to the old mill.",
+          "nextScene": "old_mill_offer"
+        },
+        {
+          "id": "back_to_hall",
+          "label": "Step back into the hall.",
+          "nextScene": "start"
+        }
+      ],
+      "conditions": []
+    },
+
+    "escort_offer": {
+      "id": "escort_offer",
+      "title": "Escort Request",
+      "description": "A merchant seeks a safe escort to the next town. 'Nothing dangerous, just keeping bandits at bay,' the notice reads. Reward: modest coin, possible favor.",
+      "choices": [
+        {
+          "id": "accept_escort",
+          "label": "Accept the escort job.",
+          "nextScene": "accept_job"
+        },
+        {
+          "id": "decline_escort",
+          "label": "Decline for now.",
+          "nextScene": "board_scene"
+        }
+      ],
+      "conditions": []
+    },
+
+    "vermin_offer": {
+      "id": "vermin_offer",
+      "title": "Vermin Clearing",
+      "description": "A notice requests help clearing a rat-filled cellar under the bakery. 'Bring a lantern, and a steady hand,' it warns. Reward: small purse of coin.",
+      "choices": [
+        {
+          "id": "accept_vermin",
+          "label": "Take the job to clear vermin.",
+          "nextScene": "accept_job"
+        },
+        {
+          "id": "skip_vermin",
+          "label": "Not interested.",
+          "nextScene": "board_scene"
+        }
+      ],
+      "conditions": []
+    },
+
+    "old_mill_offer": {
+      "id": "old_mill_offer",
+      "title": "Marked on the Map",
+      "description": "Someone has drawn a crude map with 'old mill' circled. The note below reads: 'Strange lights, coin offered for answers.' It looks like a proper mystery for the curious.",
+      "choices": [
+        {
+          "id": "investigate_mill",
+          "label": "Take note and prepare to investigate.",
+          "nextScene": "accept_job"
+        },
+        {
+          "id": "ignore_mill",
+          "label": "Ignore the mill for now.",
+          "nextScene": "board_scene"
+        }
+      ],
+      "conditions": []
+    },
+
+    "accept_job": {
+      "id": "accept_job",
+      "title": "Job Accepted",
+      "description": "You pin the job to your satchel. Preparation will be needed, but this is how livelihoods are built. Return to the clerk if you need supplies or information.",
+      "choices": [
+        {
+          "id": "prepare_now",
+          "label": "Visit the clerk for supplies.",
+          "nextScene": "clerk_scene"
+        },
+        {
+          "id": "head_out",
+          "label": "Head out to begin the task.",
+          "nextScene": "start"
+        }
+      ],
+      "conditions": []
+    }
+  }
+}

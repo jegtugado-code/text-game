@@ -7,8 +7,16 @@ import { gameUiMachine } from './game-ui-machine';
 
 export function useGameUI() {
   const [state, send] = useMachine(gameUiMachine);
-  const { makeChoice, room, scene, error, isConnected, sendInput, joinGame } =
-    useGameRoom();
+  const {
+    makeChoice,
+    room,
+    scene,
+    error,
+    isConnected,
+    sendInput,
+    joinGame,
+    continuePlaying,
+  } = useGameRoom();
   const { player } = usePlayer(room);
 
   // 🔹 When connected successfully
@@ -48,5 +56,6 @@ export function useGameUI() {
     startGame,
     isConnected,
     error,
+    continuePlaying,
   };
 }

@@ -22,12 +22,19 @@ enum FixedSceneKeys {
   EnterName = 'enter_name',
 }
 
+const defaultNarrative = {
+  chapter: 'default',
+  quest: 'default',
+  scene: FixedSceneKeys.Start,
+};
+
 export interface INarrativeSystem {
   loadChapter(chapterId: string): void;
   loadQuest(player: PlayerModel): Promise<void>;
   getCurrentScene(player: PlayerModel): SceneModel | null;
   choiceMade(player: PlayerModel, choiceId: string): void;
   inputMade(player: PlayerModel, input: string): void;
+  checkForEndingScene(player: PlayerModel): Promise<boolean>;
 }
 
 export default class NarrativeSystem implements INarrativeSystem {
@@ -123,6 +130,24 @@ export default class NarrativeSystem implements INarrativeSystem {
     player.choicesMade.push('input');
   }
 
+  public async checkForEndingScene(player: PlayerModel) {
+    const currentScene = this.getCurrentScene(player);
+    if (currentScene?.isEnding) {
+      console.log('Current scene is ending.');
+      player.currentChapter = defaultNarrative.chapter;
+      player.currentQuest = defaultNarrative.quest;
+      player.currentScene = defaultNarrative.scene;
+      player.choicesMade = [];
+      player.visitedScenes = [];
+
+      this.loadChapter(player.currentChapter);
+      await this.loadQuest(player);
+
+      return true;
+    }
+    return false;
+  }
+
   private getScene(sceneId: string) {
     return !!this.quest?.scenes[sceneId]
       ? { ...this.quest?.scenes[sceneId] }
@@ -163,18 +188,18 @@ export default class NarrativeSystem implements INarrativeSystem {
     player.currentScene = scene.id;
   }
 
-  private applyEffect(model: PlayerModel, effect: EffectModel) {
+  private applyEffect(player: PlayerModel, effect: EffectModel) {
     if (effect.type === 'addItem') {
       const item = this.items.find(i => i.id === effect.itemId);
       if (!item) return;
-      model.inventory.push(item);
+      player.inventory.push(item);
     } else if (effect.type === 'removeItem') {
-      const index = model.inventory.findIndex(i => i.id === effect.itemId);
+      const index = player.inventory.findIndex(i => i.id === effect.itemId);
       if (index !== -1) {
-        model.inventory.splice(index, 1);
+        player.inventory.splice(index, 1);
       }
     } else if (effect.type === 'modifyStat') {
-      model.stats[effect.stat] = model.stats[effect.stat] + effect.amount;
+      player.stats[effect.stat] = player.stats[effect.stat] + effect.amount;
     }
   }
 
